@@ -1,8 +1,7 @@
 package backAgil.example.back.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,7 @@ public class Livraison {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "camion_id") // Correspond au mappedBy de Camion
+    @JoinColumn(name = "camion_id", referencedColumnName = "Camion_ID") // Correspond au mappedBy de Camion
     private Camion camion;
     @ManyToMany
     @JoinTable(
@@ -69,5 +68,23 @@ public class Livraison {
 
     public void setStatut(StatutLivraison statut) {
         this.statut = statut;
+    }
+
+    public Camion getCamion() {
+        return camion;
+    }
+
+    public void setCamion(Camion camion) {
+        this.camion = camion;
+    }
+
+    @Override
+    public String toString() {
+        return "Livraison{" +
+                "camion=" + camion +
+                ", commandes=" + commandes +
+                ", dateLivraison=" + dateLivraison +
+                ", statut=" + statut +
+                '}';
     }
 }

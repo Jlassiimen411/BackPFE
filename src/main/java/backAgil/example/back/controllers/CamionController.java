@@ -44,5 +44,9 @@ public class CamionController {
         camionService.deleteCamion(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/marques/{marque}")
+    public List<Camion> getCamionsByMarque(@PathVariable String marque) {
+        return camionService.getCamionsByMarque(marque);
+    }
 
 }

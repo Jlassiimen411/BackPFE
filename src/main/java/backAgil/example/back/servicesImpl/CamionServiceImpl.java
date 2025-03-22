@@ -38,5 +38,11 @@ public class CamionServiceImpl implements CamionService {
     public void deleteCamion(Long id) {
         cRep.deleteById(id);
     }
+    // Ajoutez cette méthode dans le service CamionServiceImpl
+
+    public List<Camion> getCamionsByMarque(String marque) {
+        return cRep.findByMarque(marque);  // Requête personnalisée selon la marque
+    }
+
 
 }

@@ -11,6 +11,7 @@ public interface CamionService {
     Optional<Camion> getCamionById(Long id);
     Camion updateCamion(Long id, Camion camionDetails);
     void deleteCamion(Long id);
+    List<Camion> getCamionsByMarque(String marque);
 
 
 

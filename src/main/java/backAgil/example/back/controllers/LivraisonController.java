@@ -1,76 +1,68 @@
 package backAgil.example.back.controllers;
 
 import backAgil.example.back.models.Livraison;
-import backAgil.example.back.repositories.LivraisonRepository;
 import backAgil.example.back.services.LivraisonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api/livraisons")
+@RequestMapping(value = "/api/livraisons")
 public class LivraisonController {
-
     @Autowired
     private LivraisonService livraisonService;
-    @Autowired
-    private LivraisonRepository livraisonRepository;
-
-    @PostMapping
-    public ResponseEntity<Livraison> addLivraison(@RequestBody Livraison livraison) {
-
-        Livraison newLivraison = livraisonService.addLivraison(livraison);
-        return ResponseEntity.ok(newLivraison);
-    }
 
     @GetMapping
-    public List<Livraison> getAllLivraisons() {
-        return livraisonService.getAllLivraisons();
+    public ResponseEntity<List<Livraison>> getAllLivraisons() {
+        List<Livraison> livraisons = livraisonService.getAllLivraisons();
+        return ResponseEntity.ok(livraisons);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Livraison> getLivraisonById(@PathVariable("id") Long id) {
-        Livraison livraison = livraisonService.getLivraisonById(id);
-        if (livraison != null) {
-            return ResponseEntity.ok(livraison);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Livraison> getLivraisonById(@PathVariable Long id) {
+        Optional<Livraison> livraison = livraisonService.getLivraisonById(id);
+        return livraison.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 
+
+
+
     @PutMapping("/{id}")
-    public ResponseEntity<Livraison> updateLivraison(
-            @PathVariable Long id,
-            @RequestBody Livraison livraison) {
-        // Vérifier si la livraison avec cet ID existe
-        Optional<Livraison> existingLivraison = livraisonRepository.findById(id);
-        if (existingLivraison.isEmpty()) {
-            return ResponseEntity.badRequest().build(); // Peut causer l'erreur 400
+    public ResponseEntity<Livraison> updateLivraison(@PathVariable Long id, @RequestBody Livraison updatedLivraison) {
+        try {
+            Livraison livraison = livraisonService.updateLivraison(id, updatedLivraison);
+            return ResponseEntity.ok(livraison);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build(); // Retourne Not Found si la mise à jour échoue
         }
-
-        // Mise à jour de la livraison
-        Livraison updatedLivraison = existingLivraison.get();
-        updatedLivraison.setDateLivraison(livraison.getDateLivraison());
-        updatedLivraison.setStatut(livraison.getStatut());
-
-        livraisonRepository.save(updatedLivraison);
-        return ResponseEntity.ok(updatedLivraison);
+    }
+    @PostMapping
+    public ResponseEntity<Livraison> createLivraison(@RequestBody Livraison livraison) {
+        Livraison newLivraison = livraisonService.addLivraison(livraison);
+        return ResponseEntity.status(201).body(newLivraison);
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLivraison(@PathVariable("id") Long id) {
-        try {
-            livraisonService.deleteLivraison(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteLivraison(@PathVariable Long id) {
+        livraisonService.deleteLivraison(id);
+        return ResponseEntity.noContent().build(); // Retourne un code 204 si la suppression est réussie
+    }
+
+    @GetMapping("/immatriculation/{marque}")
+    public ResponseEntity<String> getImmatriculationByMarque(@PathVariable String marque) {
+        String immatriculation = livraisonService.getImmatriculationByMarque(marque);
+        if (immatriculation != null) {
+            return ResponseEntity.ok(immatriculation);
+        } else {
+            return ResponseEntity.notFound().build(); // Retourne Not Found si l'immatriculation n'est pas trouvée
         }
     }
+
+
 }

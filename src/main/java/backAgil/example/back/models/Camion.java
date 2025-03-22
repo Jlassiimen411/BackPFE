@@ -1,5 +1,6 @@
 package backAgil.example.back.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -17,20 +18,31 @@ public class Camion {
     private String immatriculation;
     private int kilometrage;
     private String statut;
-    @OneToMany(mappedBy = "camion") // Assurez-vous que "camion" existe bien dans Livraison
+
+
+    @OneToMany(mappedBy = "camion")
+    @JsonBackReference // Evite la sérialisation de la liste de livraisons pour empêcher la récursion
     private List<Livraison> livraisons;
+
+
+    @OneToOne
+    @JoinColumn(name = "citerne_id", referencedColumnName = "Citerne_ID")
+    private Citerne citerne;
+
 
     public Camion() {
 
     }
 
-    public Camion(String marque, String modele, String immatriculation, int kilometrage, String statut, List<Livraison> livraisons) {
+    public Camion(Long id, String marque, String modele, String immatriculation, int kilometrage, List<Livraison> livraisons, String statut, Citerne citerne) {
+        this.id = id;
         this.marque = marque;
         this.modele = modele;
         this.immatriculation = immatriculation;
         this.kilometrage = kilometrage;
-        this.statut = statut;
         this.livraisons = livraisons;
+        this.statut = statut;
+        this.citerne = citerne;
     }
 
     public Long getId() {
@@ -89,6 +101,14 @@ public class Camion {
         this.livraisons = livraisons;
     }
 
+    public Citerne getCiterne() {
+        return citerne;
+    }
+
+    public void setCiterne(Citerne citerne) {
+        this.citerne = citerne;
+    }
+
     @Override
     public String toString() {
         return "Camion{" +
@@ -99,6 +119,7 @@ public class Camion {
                 ", kilometrage=" + kilometrage +
                 ", statut='" + statut + '\'' +
                 ", livraisons=" + livraisons +
+                ", citerne=" + citerne +
                 '}';
     }
 }

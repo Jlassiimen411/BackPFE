@@ -3,6 +3,7 @@ package backAgil.example.back.services;
 import backAgil.example.back.models.Livraison;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LivraisonService {
 
@@ -10,10 +11,11 @@ public interface LivraisonService {
 
     List<Livraison> getAllLivraisons();
 
-    Livraison getLivraisonById(Long id);
+    Optional<Livraison> getLivraisonById(Long id);
 
-    Livraison updateLivraison(Livraison livraison);  // Si la livraison est mise à jour en entier, sinon updateLivraisonDetails
+    Livraison updateLivraison(Long id, Livraison updatedLivraison);
 
     void deleteLivraison(Long id);
+    String getImmatriculationByMarque(String marque);
 
 }
