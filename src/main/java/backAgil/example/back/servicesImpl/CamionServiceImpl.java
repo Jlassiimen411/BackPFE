@@ -1,7 +1,10 @@
 package backAgil.example.back.servicesImpl;
 
 import backAgil.example.back.models.Camion;
+import backAgil.example.back.models.Citerne;
+import backAgil.example.back.models.Livraison;
 import backAgil.example.back.repositories.CamionRepository;
+import backAgil.example.back.repositories.CiterneRepository;
 import backAgil.example.back.services.CamionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +17,25 @@ import java.util.Optional;
 public class CamionServiceImpl implements CamionService {
     @Autowired
     private CamionRepository cRep;
+    @Autowired
+    private CiterneRepository citerneRepository;
 
     // Ajouter un camion
+    @Override
     public Camion addCamion(Camion camion) {
+        if (camion.getCiterne() == null || camion.getCiterne().getId() == null) {
+            throw new RuntimeException("La citerne du camion ne peut pas être nulle");
+        }
+
+        Citerne citerne = citerneRepository.findById(camion.getCiterne().getId())
+                .orElseThrow(() -> new RuntimeException("Citerne introuvable"));
+
+        camion.setCiterne(citerne);
         return cRep.save(camion);
     }
+
+
+
     public List<Camion> getAllCamions() {
         return cRep.findAll();
     }

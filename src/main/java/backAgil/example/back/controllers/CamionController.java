@@ -1,9 +1,11 @@
 package backAgil.example.back.controllers;
 
 import backAgil.example.back.models.Camion;
+import backAgil.example.back.models.Livraison;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +21,12 @@ public class CamionController {
 
     @PostMapping
     public ResponseEntity<Camion> addCamion(@RequestBody Camion camion) {
-        return ResponseEntity.ok(camionService.addCamion(camion));
+        Camion newCamion = camionService.addCamion(camion);
+        return ResponseEntity.status(201).body(newCamion);
     }
+
+
+
 
     // Obtenir tous les camions
     @GetMapping

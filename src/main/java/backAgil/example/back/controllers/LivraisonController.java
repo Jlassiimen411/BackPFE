@@ -29,9 +29,6 @@ public class LivraisonController {
     }
 
 
-
-
-
     @PutMapping("/{id}")
     public ResponseEntity<Livraison> updateLivraison(@PathVariable Long id, @RequestBody Livraison updatedLivraison) {
         try {
@@ -41,6 +38,7 @@ public class LivraisonController {
             return ResponseEntity.notFound().build(); // Retourne Not Found si la mise à jour échoue
         }
     }
+
     @PostMapping
     public ResponseEntity<Livraison> createLivraison(@RequestBody Livraison livraison) {
         Livraison newLivraison = livraisonService.addLivraison(livraison);

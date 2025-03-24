@@ -12,8 +12,6 @@ public class Citerne {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Citerne_ID")
     private Long id;
-
-    @Column(nullable = false, unique = true)
     private String reference;
 
     private double capacite;

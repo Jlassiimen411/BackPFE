@@ -8,4 +8,5 @@ import java.util.List;
 public interface CamionRepository extends JpaRepository<Camion, Long> {
     List<Camion> findByMarque(String marque);
 
+
 }
