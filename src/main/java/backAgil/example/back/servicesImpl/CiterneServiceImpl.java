@@ -105,6 +105,4 @@ public class CiterneServiceImpl implements CiterneService {
         compartiment.setCiterne(citerne);
         return compartimentRepository.save(compartiment);
     }
-
-
 }

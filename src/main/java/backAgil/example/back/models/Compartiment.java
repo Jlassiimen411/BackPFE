@@ -50,6 +50,12 @@ public class Compartiment {
         this.statut = statut;
     }
 
+    public Compartiment(String reference, double capaciteMax, Statut statut) {
+        this.reference = reference;
+        this.capaciteMax = capaciteMax;
+        this.statut = statut;
+    }
+
     public double getCapaciteMax() {
         return capaciteMax;
     }

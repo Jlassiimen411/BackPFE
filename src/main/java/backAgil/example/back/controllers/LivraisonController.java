@@ -76,18 +76,7 @@ public class LivraisonController {
             return ResponseEntity.notFound().build(); // Retourne Not Found si l'immatriculation n'est pas trouvée
         }
     }
-    @GetMapping("/citerne")
-    public ResponseEntity<Citerne> getCiterneByMarqueAndImmatriculation(
-            @RequestParam String marque,
-            @RequestParam String immatriculation) {
 
-        Citerne citerne = livraisonService.getCiterneByMarqueAndImmatriculation(marque, immatriculation);
-        if (citerne != null) {
-            return ResponseEntity.ok(citerne);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 
 
 

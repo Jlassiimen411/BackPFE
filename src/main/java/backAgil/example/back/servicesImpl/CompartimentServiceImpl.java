@@ -43,6 +43,17 @@ public class CompartimentServiceImpl implements CompartimentService {
     public List<Compartiment> getCompartimentsByCiterneId(Long citerneId) {
         return compartimentRepository.findByCiterneId(citerneId);
     }
+    public Compartiment getCompartimentByCiterneReference(String reference) {
+        Citerne citerne = citerneRepository.findByReference(reference)
+                .orElseThrow(() -> new RuntimeException("Citerne avec cette référence non trouvée"));
+
+        // Ici, on suppose qu'il n'y a qu'un seul compartiment associé à la citerne pour simplifier, ou on peut ajuster en fonction du besoin
+        return compartimentRepository.findByCiterneId(citerne.getId())
+                .stream()
+                .findFirst() // Vous pouvez ajouter des critères si vous avez plusieurs compartiments associés à une citerne
+                .orElseThrow(() -> new RuntimeException("Aucun compartiment trouvé pour cette citerne"));
+    }
+
 
 
 

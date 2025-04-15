@@ -18,6 +18,6 @@ public interface LivraisonService {
 
     void deleteLivraison(Long id);
     String getImmatriculationByMarque(String marque);
-    Citerne getCiterneByMarqueAndImmatriculation(String marque, String immatriculation);
+
 
 }

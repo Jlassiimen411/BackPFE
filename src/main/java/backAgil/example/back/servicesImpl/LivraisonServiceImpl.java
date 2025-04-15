@@ -61,15 +61,7 @@ public class LivraisonServiceImpl implements LivraisonService {
         }
         return "Camion non trouvé pour cette marque";
     }
-    public Citerne getCiterneByMarqueAndImmatriculation(String marque, String immatriculation) {
-        List<Camion> camions = cService.getCamionsByMarque(marque);
-        for (Camion camion : camions) {
-            if (camion.getImmatriculation().equals(immatriculation)) {
-                return camion.getCiterne();
-            }
-        }
-        return null;
-    }
+
 
 
 }

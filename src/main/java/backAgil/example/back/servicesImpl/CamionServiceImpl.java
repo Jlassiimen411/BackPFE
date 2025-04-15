@@ -37,13 +37,11 @@ public class CamionServiceImpl implements CamionService {
     }
     @Override
     public Citerne getCiterneByImmatriculation(String immatriculation) {
-        Camion camion = cRep.findAll().stream()
-                .filter(c -> c.getImmatriculation().equalsIgnoreCase(immatriculation))
-                .findFirst()
+        Camion camion = cRep. findByImmatriculation(immatriculation)
                 .orElseThrow(() -> new RuntimeException("Aucun camion trouvé avec cette immatriculation"));
-
         return camion.getCiterne();
     }
+
 
 
 

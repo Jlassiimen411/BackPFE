@@ -1,7 +1,9 @@
 package backAgil.example.back.controllers;
 
 import backAgil.example.back.models.Camion;
+import backAgil.example.back.models.Compartiment;
 import backAgil.example.back.models.Livraison;
+import backAgil.example.back.repositories.CompartimentRepository;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,15 @@ import java.util.Optional;
 public class CamionController {
     @Autowired
     private CamionService camionService;
+    @Autowired
+    private CompartimentRepository compartimentRepository;
 
     @PostMapping
     public ResponseEntity<Camion> addCamion(@RequestBody Camion camion) {
         Camion newCamion = camionService.addCamion(camion);
         return ResponseEntity.status(201).body(newCamion);
     }
-    @GetMapping("/api/citernesz/{immatriculation}")
+    @GetMapping("/citernes/{immatriculation}")
     public ResponseEntity<?> getCiterneByImmatriculation(@PathVariable String immatriculation) {
         try {
             return ResponseEntity.ok(camionService.getCiterneByImmatriculation(immatriculation));
@@ -32,10 +36,6 @@ public class CamionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-
-
-
 
     // Obtenir tous les camions
     @GetMapping
@@ -49,6 +49,7 @@ public class CamionController {
         return camion.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<Camion> updateCamion(@PathVariable Long id, @RequestBody Camion camionDetails) {
