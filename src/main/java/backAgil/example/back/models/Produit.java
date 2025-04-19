@@ -1,6 +1,7 @@
 package backAgil.example.back.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.Date;
 
@@ -16,14 +17,15 @@ public class Produit {
 
     private String nomProduit;
     private String libelle;
-    private double prix;
+    private float prix;
 
     @Temporal(TemporalType.DATE)
     private Date date;
 
     @Column(length = 500)
     private String description;
-
+    @JsonProperty("quantite")
+    private Float quantite;
     @ManyToOne
     @JoinColumn(name = "type_produit_id")
     @JsonBackReference
@@ -31,7 +33,7 @@ public class Produit {
 
     public Produit() {}
 
-    public Produit(String codeProduit, String nomProduit, String libelle, double prix, Date date, String description , TypeProduit typeProduit) {
+    public Produit(String codeProduit, String nomProduit, String libelle, float prix, Date date, String description , TypeProduit typeProduit) {
         this.codeProduit = codeProduit;
         this.nomProduit = nomProduit;
         this.libelle = libelle;
@@ -41,9 +43,16 @@ public class Produit {
         this.typeProduit = typeProduit;
 
     }
-
-
     // Getters et Setters
+    @JsonProperty("quantite")
+    public Float getQuantite() {
+        return quantite;
+    }
+
+    public void setQuantite(Float quantite) {
+        this.quantite = quantite;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -56,8 +65,8 @@ public class Produit {
     public String getLibelle() { return libelle; }
     public void setLibelle(String libelle) { this.libelle = libelle; }
 
-    public double getPrix() { return prix; }
-    public void setPrix(double prix) { this.prix = prix; }
+    public float getPrix() { return prix; }
+    public void setPrix(float prix) { this.prix = prix; }
 
     public Date getDate() { return date; }
     public void setDate(Date date) { this.date = date; }

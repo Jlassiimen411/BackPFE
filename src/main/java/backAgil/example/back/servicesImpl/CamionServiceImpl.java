@@ -25,22 +25,14 @@ public class CamionServiceImpl implements CamionService {
     // Ajouter un camion
     @Override
     public Camion addCamion(Camion camion) {
-        if (camion.getCiterne() == null || camion.getCiterne().getId() == null) {
-            throw new RuntimeException("La citerne du camion ne peut pas être nulle");
-        }
-
-        Citerne citerne = citerneRepository.findById(camion.getCiterne().getId())
-                .orElseThrow(() -> new RuntimeException("Citerne introuvable"));
-
-        camion.setCiterne(citerne);
         return cRep.save(camion);
     }
-    @Override
+    /*@Override
     public Citerne getCiterneByImmatriculation(String immatriculation) {
         Camion camion = cRep. findByImmatriculation(immatriculation)
                 .orElseThrow(() -> new RuntimeException("Aucun camion trouvé avec cette immatriculation"));
         return camion.getCiterne();
-    }
+    }*/
 
 
 

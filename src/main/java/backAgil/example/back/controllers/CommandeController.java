@@ -1,5 +1,5 @@
 package backAgil.example.back.controllers;
-
+import backAgil.example.back.models.CommandeProduit;
 import backAgil.example.back.models.Commande;
 import backAgil.example.back.models.Produit;
 import backAgil.example.back.repositories.CommandeRepository;
@@ -28,18 +28,18 @@ public class CommandeController {
     private CommandeRepository commandeRepository;
 
     // GET all commandes
+
     @GetMapping
     public List<Commande> getAll() {
-        List<Commande> commandes = cService.getAllCommandes();
-        commandes.forEach(c -> System.out.println("Commande ID: " + c.getId() + ", Price: " + c.getPrice()));
-        return commandes;
+        return cService.getAllCommandes();  // Retourne directement la liste des commandes
     }
 
     // GET commande by ID
     @GetMapping("/{id}")
     public ResponseEntity<Commande> getCommandeById(@PathVariable("id") Long id) {
-        Commande commande = cService.getCommandeById(id);
-        return commande != null ? ResponseEntity.ok(commande) : ResponseEntity.notFound().build();
+        return commandeRepository.findCommandeWithProduitsAndTypes(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // CHECK if codeCommande exists
@@ -53,25 +53,11 @@ public class CommandeController {
 
     // ADD commande
     @PostMapping
-    public ResponseEntity<?> addCommande(@RequestBody Commande commande) {
-        try {
-            if (commande.getCodeCommande() == null || commande.getCodeCommande().isEmpty()) {
-                return ResponseEntity.badRequest().body("Le champ codeCommande est obligatoire.");
-            }
-
-            if (commandeRepository.existsByCodeCommande(commande.getCodeCommande())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("Ce codeCommande existe déjà.");
-            }
-
-            System.out.println("🚀 Commande reçue: " + commande);
-            Commande savedCommande = cService.addCommande(commande);
-            System.out.println("✅ Commande sauvegardée: " + savedCommande);
-            return ResponseEntity.ok(savedCommande);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur serveur : " + e.getMessage());
-        }
+    public ResponseEntity<Commande> addCommande(@RequestBody Commande commande) {
+        Commande createdCommande = cService.addCommande(commande);
+        return new ResponseEntity<>(createdCommande, HttpStatus.CREATED);
     }
+
 
     // EDIT commande
     @PutMapping("/{id}")
@@ -79,26 +65,32 @@ public class CommandeController {
         try {
             c.setId(id);
 
-            if (c.getProduits() != null) {
-                for (Produit produit : c.getProduits()) {
-                    Produit existingProduit = produitService.getProduitById(produit.getId());
-                    if (existingProduit != null) {
-                        produit.setNomProduit(existingProduit.getNomProduit());
-                        produit.setDescription(existingProduit.getDescription());
-                        produit.setPrix(existingProduit.getPrix());
-                        produit.setDate(existingProduit.getDate());
+            if (c.getCommandeProduits() != null) {
+                for (CommandeProduit cp : c.getCommandeProduits()) {
+                    Produit produit = cp.getProduit();
+                    if (produit != null && produit.getId() != null) {
+                        Produit existingProduit = produitService.getProduitById(produit.getId());
+                        if (existingProduit != null) {
+                            produit.setNomProduit(existingProduit.getNomProduit());
+                            produit.setDescription(existingProduit.getDescription());
+                            produit.setPrix(existingProduit.getPrix());
+                            produit.setDate(existingProduit.getDate());
+                        }
                     }
+                    cp.setCommande(c); // Important : rattacher chaque commandeProduit à la commande
                 }
             }
 
             Commande updatedCommande = cService.editCommande(c);
             return ResponseEntity.ok(updatedCommande);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erreur serveur : " + e.getMessage());
         }
     }
+
 
     // DELETE commande
     @DeleteMapping("/{id}")

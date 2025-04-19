@@ -26,7 +26,7 @@ public class ProduitController {
     //METH 1 : GET All Produit
     @GetMapping
     public List<Produit> getAllProduit(){
-        return pService.getAllProduits();
+        return produitRepository.findAllWithTypeProduit();
     }
     //METH 2 : GET Produit By ID
     @GetMapping("/{id}")

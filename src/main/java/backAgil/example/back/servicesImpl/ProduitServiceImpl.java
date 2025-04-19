@@ -22,10 +22,6 @@ public class ProduitServiceImpl implements ProduitService { // Implémentez l'in
     @Autowired
     private CartRepository cRepo;
 
-
-
-
-
     @Override
     public List<Produit> getAllProduits() {
         return pRepo.findAll();

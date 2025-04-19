@@ -4,6 +4,8 @@ package backAgil.example.back.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +21,7 @@ public class Commande {
 
     private String codeCommande;
 
-
+    @JsonProperty("quantite")
     private Float quantite;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -30,24 +32,23 @@ public class Commande {
     private Float totalPrice;
 
 
-    @ManyToMany
-    @JoinTable(name = "commande_produits",
-            joinColumns = @JoinColumn(name = "commande_id"),
-            inverseJoinColumns = @JoinColumn(name = "produit_id"))
-    private List<Produit> produits;
+    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<CommandeProduit> commandeProduits;
+
+
 
 
     public Commande() {
     }
 
-    public Commande(Long id, Float quantite, String codeCommande, Date dateCommande, Float price, Float totalPrice, List<Produit> produits) {
-        this.id = id;
-        this.quantite = quantite;
+    public Commande(String codeCommande, Float quantite, Date dateCommande, Float price, Float totalPrice, List<CommandeProduit> commandeProduits) {
         this.codeCommande = codeCommande;
+        this.quantite = quantite;
         this.dateCommande = dateCommande;
         this.price = price;
         this.totalPrice = totalPrice;
-        this.produits = produits;
+        this.commandeProduits = commandeProduits;
     }
 
     public Long getId() {
@@ -69,7 +70,7 @@ public class Commande {
     public Float getQuantite() {
         return quantite;
     }
-
+    @JsonProperty("quantite")
     public void setQuantite(Float quantite) {
         this.quantite = quantite;
     }
@@ -98,24 +99,23 @@ public class Commande {
         this.totalPrice = totalPrice;
     }
 
-    public List<Produit> getProduits() {
-        return produits;
+    public List<CommandeProduit> getCommandeProduits() {
+        return commandeProduits;
     }
 
-    public void setProduits(List<Produit> produits) {
-        this.produits = produits;
+    public void setCommandeProduits(List<CommandeProduit> commandeProduits) {
+        this.commandeProduits = commandeProduits;
     }
 
     @Override
     public String toString() {
         return "Commande{" +
-                "id=" + id +
-                ", code=" + codeCommande +
+                "codeCommande='" + codeCommande + '\'' +
                 ", quantite=" + quantite +
                 ", dateCommande=" + dateCommande +
                 ", price=" + price +
                 ", totalPrice=" + totalPrice +
-                ", produits=" + produits +
+                ", commandeProduits=" + commandeProduits +
                 '}';
     }
 }

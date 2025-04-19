@@ -9,7 +9,7 @@ public interface CommandeService {
     public List<Commande> getAllCommandes();
     public Commande getCommandeById(Long id);
     public void deleteCommandeById(Long id);
-    public Commande addCommande(Commande c);
+    public Commande addCommande(Commande commande);
     public Commande editCommande(Commande c);
 
 }

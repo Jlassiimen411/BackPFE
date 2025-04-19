@@ -25,7 +25,7 @@ public class TypeProduit {
     private LocalDate date;
 
 
-    @OneToMany(mappedBy = "typeProduit", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "typeProduit")
     @JsonManagedReference
     private List<Produit> produits;
 
@@ -40,7 +40,13 @@ public class TypeProduit {
         this.date = date;
     }
 
-    // Getters and Setters
+    public TypeProduit(String name, String description, LocalDate date, List<Produit> produits) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.produits = produits;
+    }
+// Getters and Setters
 
 
     public List<Produit> getProduits() {

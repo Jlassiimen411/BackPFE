@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 @RequestMapping("/api/order")
 public class OrderDetailController {
-    @Autowired
+ /*   @Autowired
     private OrderDetailService orderDetailService;
 
 
@@ -18,5 +18,5 @@ public class OrderDetailController {
     public void placeOrder(@RequestBody OrderInput orderInput){
         orderDetailService.placeOrder(orderInput);
 
-    }
+    }*/
 }

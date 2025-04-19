@@ -28,14 +28,14 @@ public class CamionController {
         Camion newCamion = camionService.addCamion(camion);
         return ResponseEntity.status(201).body(newCamion);
     }
-    @GetMapping("/citernes/{immatriculation}")
+    /*@GetMapping("/citernes/{immatriculation}")
     public ResponseEntity<?> getCiterneByImmatriculation(@PathVariable String immatriculation) {
         try {
             return ResponseEntity.ok(camionService.getCiterneByImmatriculation(immatriculation));
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-    }
+    }*/
 
     // Obtenir tous les camions
     @GetMapping

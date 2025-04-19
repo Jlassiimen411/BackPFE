@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
 
-    private static final String ORDER_PLACED = "Placed";
+ /*   private static final String ORDER_PLACED = "Placed";
 
     @Autowired
     private OrderDetailRepository oRepo;
@@ -24,10 +24,10 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Autowired
     private ProduitRepository pRepo;
 
-    /*
+
     @Autowired
     private UserRepository uRepo;
-     */
+
 
     public void placeOrder(OrderInput orderInput) {
         List<OrderProductQuantity> productQuantityList = orderInput.getOrderProductQuantityList();
@@ -38,7 +38,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             string currentUser = JwtRequestFilter.CURRENT_USER;
             User user = uRepo.findById(currentUser).get();
             */
-            OrderDetail orderDetail = new OrderDetail(
+           /* OrderDetail orderDetail = new OrderDetail(
                     orderInput.getFullName(),
                     orderInput.getFullAddress(),
                     orderInput.getContactNumber(),
@@ -50,6 +50,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
             oRepo.save(orderDetail);
         }
-    }
+    }*/
 
 }

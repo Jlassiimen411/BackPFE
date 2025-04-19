@@ -13,7 +13,7 @@ public interface CamionService {
     Camion updateCamion(Long id, Camion camionDetails);
     void deleteCamion(Long id);
     List<Camion> getCamionsByMarque(String marque);
-    Citerne getCiterneByImmatriculation(String immatriculation);
+    /*Citerne getCiterneByImmatriculation(String immatriculation);*/
 
 
 
