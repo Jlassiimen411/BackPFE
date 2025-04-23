@@ -1,6 +1,7 @@
 package backAgil.example.back.controllers;
 
 import backAgil.example.back.models.Citerne;
+import backAgil.example.back.models.Compartiment;
 import backAgil.example.back.services.CiterneService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class CiterneController {
     @GetMapping
     public List<Citerne> getAllCiternes() {
         return citerneService.getAllCiternes();
+    }
+    @GetMapping("/{id}/compartiments")
+    public ResponseEntity<List<Compartiment>> getCompartimentsByCiterneId(@PathVariable Long id) {
+        List<Compartiment> compartiments = citerneService.getCompartimentsByCiterneId(id);
+        return ResponseEntity.ok(compartiments);
     }
 
 
