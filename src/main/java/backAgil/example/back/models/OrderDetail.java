@@ -12,24 +12,24 @@ public class OrderDetail {
     private String orderFullName;
     private String orderFullOrder;
     private String orderContactNumber;
+
     private String orderStatuts;
-    private Double orderAmount;
+    private float orderAmount;
     @OneToOne
     private Produit produit;
     /*@OneToOne
     private User user;*/
 
-    public OrderDetail(){
 
-    }
 
-    public OrderDetail(String orderFullName, String orderFullOrder, String orderContactNumber, String orderStatuts, Double orderAmount, Produit produit) {
+    public OrderDetail(String orderFullName, String orderFullOrder, String orderContactNumber, float orderAmount, String orderStatuts, Produit produit) {
         this.orderFullName = orderFullName;
         this.orderFullOrder = orderFullOrder;
         this.orderContactNumber = orderContactNumber;
-        this.orderStatuts = orderStatuts;
         this.orderAmount = orderAmount;
+        this.orderStatuts = orderStatuts;
         this.produit = produit;
+
     }
 
     public Produit getProduit() {
@@ -80,12 +80,14 @@ public class OrderDetail {
         this.orderContactNumber = orderContactNumber;
     }
 
-    public Double getOrderAmount() {
+    public float getOrderAmount() {
         return orderAmount;
     }
 
-    public void setOrderAmount(Double orderAmount) {
+    public void setOrderAmount(float orderAmount) {
         this.orderAmount = orderAmount;
     }
+
+
 }
 

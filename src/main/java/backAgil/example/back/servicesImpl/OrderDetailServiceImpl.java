@@ -16,18 +16,18 @@ import java.util.List;
 @Service
 public class OrderDetailServiceImpl implements OrderDetailService {
 
- /*   private static final String ORDER_PLACED = "Placed";
+   private static final String ORDER_PLACED = "Placed";
 
     @Autowired
     private OrderDetailRepository oRepo;
 
     @Autowired
     private ProduitRepository pRepo;
-
+/*
 
     @Autowired
     private UserRepository uRepo;
-
+*/
 
     public void placeOrder(OrderInput orderInput) {
         List<OrderProductQuantity> productQuantityList = orderInput.getOrderProductQuantityList();
@@ -38,18 +38,19 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             string currentUser = JwtRequestFilter.CURRENT_USER;
             User user = uRepo.findById(currentUser).get();
             */
-           /* OrderDetail orderDetail = new OrderDetail(
+            Double total = Double.valueOf(product.getPrix() * o.getQuantity().floatValue());
+            OrderDetail orderDetail = new OrderDetail(
                     orderInput.getFullName(),
                     orderInput.getFullAddress(),
                     orderInput.getContactNumber(),
+                    product.getPrix() *o.getQuantity(),
                     ORDER_PLACED,
-                    product.getPrix() * o.getQuantity(),
                     product
                     //user
             );
 
             oRepo.save(orderDetail);
         }
-    }*/
+    }
 
 }

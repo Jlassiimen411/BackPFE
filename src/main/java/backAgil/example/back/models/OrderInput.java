@@ -9,6 +9,14 @@ public class OrderInput {
     private List<OrderProductQuantity> orderProductQuantityList;
 
 
+    public OrderInput(String fullAddress, String fullName, String contactNumber, List<OrderProductQuantity> orderProductQuantityList) {
+        this.fullAddress = fullAddress;
+        this.fullName = fullName;
+        this.contactNumber = contactNumber;
+        this.orderProductQuantityList = orderProductQuantityList;
+
+    }
+
     public String getFullName() {
         return fullName;
     }
@@ -40,4 +48,6 @@ public class OrderInput {
     public void setOrderProductQuantityList(List<OrderProductQuantity> orderProductQuantityList) {
         this.orderProductQuantityList = orderProductQuantityList;
     }
+
+
 }

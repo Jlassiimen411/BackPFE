@@ -40,13 +40,14 @@ public class TypeProduit {
         this.date = date;
     }
 
-    public TypeProduit(String name, String description, LocalDate date, List<Produit> produits) {
+    public TypeProduit(String name, String description, LocalDate date,  List<Produit> produits) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.produits = produits;
     }
-// Getters and Setters
+
+    // Getters and Setters
 
 
     public List<Produit> getProduits() {

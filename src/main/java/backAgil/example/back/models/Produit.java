@@ -19,6 +19,7 @@ public class Produit {
     private String libelle;
     private float prix;
 
+
     @Temporal(TemporalType.DATE)
     private Date date;
 
@@ -26,6 +27,7 @@ public class Produit {
     private String description;
     @JsonProperty("quantite")
     private Float quantite;
+
     @ManyToOne
     @JoinColumn(name = "type_produit_id")
     @JsonBackReference
@@ -81,6 +83,8 @@ public class Produit {
     public void setTypeProduit(TypeProduit typeProduit) {
         this.typeProduit = typeProduit;
     }
+
+
 
     @Override
     public String toString() {

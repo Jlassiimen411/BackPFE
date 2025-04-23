@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 @Service
 public class LivraisonServiceImpl implements LivraisonService {
-
+/*
     @Autowired
     private LivraisonRepository livraisonRepository;
     @Autowired
@@ -62,6 +62,6 @@ public class LivraisonServiceImpl implements LivraisonService {
         return "Camion non trouvé pour cette marque";
     }
 
-
+*/
 
 }

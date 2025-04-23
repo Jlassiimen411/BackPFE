@@ -1,11 +1,10 @@
 package backAgil.example.back.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import org.antlr.v4.runtime.misc.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,11 +17,13 @@ public class Citerne {
     private String reference;
 
     private double capacite;
+    @NotNull
+    private Integer nombreCompartiments;
 
-
-    @OneToMany(mappedBy = "citerne")
     @JsonManagedReference
+    @OneToMany(mappedBy = "citerne", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Compartiment> compartiments;
+
 
 
 
@@ -33,12 +34,11 @@ public class Citerne {
 
     public Citerne() {}
 
-    public Citerne(Long id, String reference, List<Compartiment> compartiments, double capacite, Camion camion) {
-        this.id = id;
+    public Citerne(String reference, double capacite, Integer nombreCompartiments, List<Compartiment> compartiments) {
         this.reference = reference;
-        this.compartiments = compartiments;
         this.capacite = capacite;
-        this.camion = camion;
+        this.nombreCompartiments = nombreCompartiments;
+        this.compartiments = compartiments;
     }
 
     public Long getId() {
@@ -73,6 +73,7 @@ public class Citerne {
         this.compartiments = compartiments;
     }
 
+
     @JsonIgnore
     public Camion getCamion() {
         return camion;
@@ -82,15 +83,22 @@ public class Citerne {
         this.camion = camion;
     }
 
+    public Integer getNombreCompartiments() {
+        return nombreCompartiments;
+    }
+
+    public void setNombreCompartiments(Integer nombreCompartiments) {
+        this.nombreCompartiments = nombreCompartiments;
+    }
 
     @Override
     public String toString() {
         return "Citerne{" +
-                "id=" + id +
-                ", reference='" + reference + '\'' +
+                "reference='" + reference + '\'' +
                 ", capacite=" + capacite +
-                ", compartiments=" + compartiments.size() + " compartiments" +
+                ", nombreCompartiments=" + nombreCompartiments +
+                ", compartiments=" + compartiments +
+                ", camion=" + camion +
                 '}';
     }
-
 }

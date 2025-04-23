@@ -2,10 +2,10 @@ package backAgil.example.back.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
+
 @Entity
 @Table(name = "compartiments")
 public class Compartiment {
@@ -17,25 +17,28 @@ public class Compartiment {
     @Column(name = "Capacite_Max", nullable = false)
     private double capaciteMax;
 
-    @Column(name = "Reference", nullable = false, unique = true)
+    @Column(name = "Reference", nullable = false, unique = true)  // Ajout de la colonne Reference
     private String reference;
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Statut", nullable = false)
     private Statut statut; // Statut du compartiment (plein, en cours, vide)
 
 
-
-    @ManyToOne
-    @JoinColumn(name = "citerne_id")
     @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "citerne_id", nullable = false)
     private Citerne citerne;
 
 
-
-
+    @Enumerated(EnumType.STRING)
+    private TypeProduit typeProduit;
 
     public Compartiment() {}
+    public enum TypeProduit {
+        GAZ, CARBURANT, LUBRIFIANT
+    }
 
     public enum Statut {
         PLEIN,
@@ -43,25 +46,12 @@ public class Compartiment {
         VIDE;
     }
 
-    public Compartiment(Long id, double capaciteMax, String reference, Statut statut) {
-        this.id = id;
+    public Compartiment(double capaciteMax, String reference, Statut statut, Citerne citerne, TypeProduit typeProduit) {
         this.capaciteMax = capaciteMax;
         this.reference = reference;
         this.statut = statut;
-    }
-
-    public Compartiment(String reference, double capaciteMax, Statut statut) {
-        this.reference = reference;
-        this.capaciteMax = capaciteMax;
-        this.statut = statut;
-    }
-
-    public double getCapaciteMax() {
-        return capaciteMax;
-    }
-
-    public void setCapaciteMax(double capaciteMax) {
-        this.capaciteMax = capaciteMax;
+        this.citerne = citerne;
+        this.typeProduit = typeProduit;
     }
 
     public Long getId() {
@@ -72,13 +62,15 @@ public class Compartiment {
         this.id = id;
     }
 
-    public String getReference() {
-        return reference;
+    public double getCapaciteMax() {
+        return capaciteMax;
     }
 
-    public void setReference(String reference) {
-        this.reference = reference;
+    public void setCapaciteMax(double capaciteMax) {
+        this.capaciteMax = capaciteMax;
     }
+
+
 
     public Statut getStatut() {
         return statut;
@@ -96,12 +88,20 @@ public class Compartiment {
         this.citerne = citerne;
     }
 
-    public Compartiment(Long id, double capaciteMax, String reference, Statut statut, Citerne citerne) {
-        this.id = id;
-        this.capaciteMax = capaciteMax;
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
         this.reference = reference;
-        this.statut = statut;
-        this.citerne = citerne;
+    }
+
+    public TypeProduit getTypeProduit() {
+        return typeProduit;
+    }
+
+    public void setTypeProduit(TypeProduit typeProduit) {
+        this.typeProduit = typeProduit;
     }
 
     @Override
@@ -112,6 +112,7 @@ public class Compartiment {
                 ", reference='" + reference + '\'' +
                 ", statut=" + statut +
                 ", citerne=" + citerne +
+                ", typeProduit=" + typeProduit +
                 '}';
     }
 }

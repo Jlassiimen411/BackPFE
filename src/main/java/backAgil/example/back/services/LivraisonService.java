@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface LivraisonService {
 
-    Livraison addLivraison(Livraison livraison);
+   /* Livraison addLivraison(Livraison livraison);
 
     List<Livraison> getAllLivraisons();
 
@@ -19,5 +19,5 @@ public interface LivraisonService {
     void deleteLivraison(Long id);
     String getImmatriculationByMarque(String marque);
 
-
+*/
 }
