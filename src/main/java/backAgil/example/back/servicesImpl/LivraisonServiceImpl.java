@@ -4,6 +4,7 @@ import backAgil.example.back.models.Camion;
 import backAgil.example.back.models.Citerne;
 import backAgil.example.back.models.Livraison;
 import backAgil.example.back.repositories.CamionRepository;
+import backAgil.example.back.repositories.CiterneRepository;
 import backAgil.example.back.repositories.LivraisonRepository;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.LivraisonService;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 @Service
 public class LivraisonServiceImpl implements LivraisonService {
-/*
+
     @Autowired
     private LivraisonRepository livraisonRepository;
     @Autowired
@@ -22,6 +23,9 @@ public class LivraisonServiceImpl implements LivraisonService {
 
     @Autowired
     private CamionService cService;
+
+    @Autowired
+    private CiterneRepository citerneRepository;
 
     public List<Livraison> getAllLivraisons() {
         return livraisonRepository.findAll();
@@ -62,6 +66,6 @@ public class LivraisonServiceImpl implements LivraisonService {
         return "Camion non trouvé pour cette marque";
     }
 
-*/
+
 
 }

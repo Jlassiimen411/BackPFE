@@ -34,11 +34,12 @@ public class Citerne {
 
     public Citerne() {}
 
-    public Citerne(String reference, double capacite, Integer nombreCompartiments, List<Compartiment> compartiments) {
+    public Citerne(String reference, Integer nombreCompartiments, double capacite, List<Compartiment> compartiments, Camion camion) {
         this.reference = reference;
-        this.capacite = capacite;
         this.nombreCompartiments = nombreCompartiments;
+        this.capacite = capacite;
         this.compartiments = compartiments;
+        this.camion = camion;
     }
 
     public Long getId() {
@@ -94,7 +95,8 @@ public class Citerne {
     @Override
     public String toString() {
         return "Citerne{" +
-                "reference='" + reference + '\'' +
+                "id=" + id +
+                ", reference='" + reference + '\'' +
                 ", capacite=" + capacite +
                 ", nombreCompartiments=" + nombreCompartiments +
                 ", compartiments=" + compartiments +

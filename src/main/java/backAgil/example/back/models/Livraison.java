@@ -17,6 +17,9 @@ public class Livraison {
     @ManyToOne
     @JoinColumn(name = "camion_id", referencedColumnName = "Camion_ID") // Correspond au mappedBy de Camion
     private Camion camion;
+   /* @ManyToOne
+    @JoinColumn(name = "citerne_id", referencedColumnName = "Citerne_ID") // Nouvelle relation avec Citerne
+    private Citerne citerne; // Ajout de la référence à Citerne*/
     @ManyToMany
     @JoinTable(
             name = "livraison_commandes",
@@ -36,6 +39,14 @@ public class Livraison {
     public List<Commande> getCommandes() {
         return commandes;
     }
+
+  /*  public Citerne getCiterne() {
+        return citerne;
+    }
+
+    public void setCiterne(Citerne citerne) {
+        this.citerne = citerne;
+    }*/
 
     public void setCommandes(List<Commande> commandes) {
         this.commandes = commandes;
@@ -93,6 +104,7 @@ public class Livraison {
                 "id=" + id +
                 ", codeLivraison='" + codeLivraison + '\'' +
                 ", camion=" + camion +
+               /* ", citerne=" + citerne +*/
                 ", commandes=" + commandes +
                 ", dateLivraison=" + dateLivraison +
                 ", statut=" + statut +

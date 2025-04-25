@@ -17,7 +17,7 @@ import java.util.Optional;
 @RestController
 @CrossOrigin("*")
 @RequestMapping(value = "/api/livraisons")
-public class LivraisonController {/*
+public class LivraisonController {
     @Autowired
     private LivraisonService livraisonService;
     @Autowired
@@ -77,7 +77,7 @@ public class LivraisonController {/*
         }
     }
 
-*/
+
 
 
 

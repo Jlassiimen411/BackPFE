@@ -1,7 +1,6 @@
-package backAgil.example.back.services.impl;
+package backAgil.example.back.servicesImpl;
 
 import backAgil.example.back.models.Citerne;
-import backAgil.example.back.models.Compartiment;
 import backAgil.example.back.repositories.CiterneRepository;
 import backAgil.example.back.services.CiterneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +43,4 @@ public class CiterneServiceImpl implements CiterneService {
     public void deleteCiterne(Long id) {
         citerneRepository.deleteById(id);
     }
-    @Override
-    public List<Compartiment> getCompartimentsByCiterneId(Long id) {
-        Citerne citerne = citerneRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Citerne non trouvée avec id: " + id));
-        return citerne.getCompartiments();
-    }
-
 }

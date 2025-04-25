@@ -3,6 +3,7 @@ package backAgil.example.back.controllers;
 import backAgil.example.back.models.Compartiment;
 import backAgil.example.back.services.CompartimentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +30,13 @@ public class CompartimentController {
     }
 
 
-    @GetMapping("/citerne/{citerneId}")
-    public List<Compartiment> getCompartimentsByCiterneId(@PathVariable Long citerneId) {
+    @GetMapping("/citerne/{citerneId}/compartiments")
+    public List<Compartiment> getCompartimentsByCiterneId(@PathVariable("citerneId") Long citerneId) {
         return compartimentService.getCompartimentsByCiterneId(citerneId);
     }
+
+
+
 
 
     @PostMapping
