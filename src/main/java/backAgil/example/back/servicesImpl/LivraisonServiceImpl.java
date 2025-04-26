@@ -2,9 +2,11 @@ package backAgil.example.back.servicesImpl;
 
 import backAgil.example.back.models.Camion;
 import backAgil.example.back.models.Citerne;
+import backAgil.example.back.models.Commande;
 import backAgil.example.back.models.Livraison;
 import backAgil.example.back.repositories.CamionRepository;
 import backAgil.example.back.repositories.CiterneRepository;
+import backAgil.example.back.repositories.CommandeRepository;
 import backAgil.example.back.repositories.LivraisonRepository;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.LivraisonService;
@@ -20,6 +22,8 @@ public class LivraisonServiceImpl implements LivraisonService {
     private LivraisonRepository livraisonRepository;
     @Autowired
     private CamionRepository camionRepository;
+    @Autowired
+    private CommandeRepository commandeRepository;
 
     @Autowired
     private CamionService cService;
@@ -37,12 +41,32 @@ public class LivraisonServiceImpl implements LivraisonService {
 
     @Override
     public Livraison addLivraison(Livraison livraison) {
-        Camion camion = camionRepository.findById(livraison.getCamion().getId())
-                .orElseThrow(() -> new RuntimeException("Camion introuvable"));
+        // Vérification si le code de livraison existe déjà
+        if (livraisonRepository.existsByCodeLivraison(livraison.getCodeLivraison())) {
+            throw new IllegalArgumentException("Code de livraison déjà utilisé.");
+        }
 
-        livraison.setCamion(camion); // Associe le camion existant à la livraison
+        // Vérification de l'existence du camion
+        Camion camion = camionRepository.findById(livraison.getCamion().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Camion introuvable"));
+
+        // Vérification de l'existence de la citerne
+        Citerne citerne = citerneRepository.findById(livraison.getCiterne().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Citerne introuvable"));
+
+        // Vérification des commandes
+        List<Commande> commandes = livraison.getCommandes().stream()
+                .map(c -> commandeRepository.findById(c.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Commande introuvable: ID=" + c.getId())))
+                .toList();
+
+        livraison.setCamion(camion);
+        livraison.setCiterne(citerne);
+        livraison.setCommandes(commandes);
+
         return livraisonRepository.save(livraison);
     }
+
 
 
     public Livraison updateLivraison(Long id, Livraison updatedLivraison) {
