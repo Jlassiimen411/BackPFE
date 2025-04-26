@@ -1,5 +1,6 @@
 package backAgil.example.back.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -24,7 +25,9 @@ public class Citerne {
     @OneToMany(mappedBy = "citerne", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Compartiment> compartiments;
 
-
+    @OneToMany(mappedBy = "camion")
+    @JsonBackReference // Evite la sérialisation de la liste de livraisons pour empêcher la récursion
+    private List<Livraison> livraisons;
 
 
     @OneToOne(mappedBy = "citerne")

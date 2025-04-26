@@ -17,9 +17,9 @@ public class Livraison {
     @ManyToOne
     @JoinColumn(name = "camion_id", referencedColumnName = "Camion_ID") // Correspond au mappedBy de Camion
     private Camion camion;
-   /* @ManyToOne
+   @ManyToOne
     @JoinColumn(name = "citerne_id", referencedColumnName = "Citerne_ID") // Nouvelle relation avec Citerne
-    private Citerne citerne; // Ajout de la référence à Citerne*/
+    private Citerne citerne; // Ajout de la référence à Citerne
     @ManyToMany
     @JoinTable(
             name = "livraison_commandes",
@@ -27,6 +27,15 @@ public class Livraison {
             inverseJoinColumns = @JoinColumn(name = "commande_id")
     )
     private List<Commande> commandes;
+
+    public Livraison(String codeLivraison, Camion camion, Citerne citerne, List<Commande> commandes, Date dateLivraison, StatutLivraison statut) {
+        this.codeLivraison = codeLivraison;
+        this.camion = camion;
+        this.citerne = citerne;
+        this.commandes = commandes;
+        this.dateLivraison = dateLivraison;
+        this.statut = statut;
+    }
 
     public String getCodeLivraison() {
         return codeLivraison;
@@ -40,13 +49,13 @@ public class Livraison {
         return commandes;
     }
 
-  /*  public Citerne getCiterne() {
+   public Citerne getCiterne() {
         return citerne;
     }
 
     public void setCiterne(Citerne citerne) {
         this.citerne = citerne;
-    }*/
+    }
 
     public void setCommandes(List<Commande> commandes) {
         this.commandes = commandes;
@@ -73,6 +82,8 @@ public class Livraison {
         this.id = id;
     }
 
+    public Livraison() {
+    }
 
     public Date getDateLivraison() {
         return dateLivraison;
@@ -104,7 +115,7 @@ public class Livraison {
                 "id=" + id +
                 ", codeLivraison='" + codeLivraison + '\'' +
                 ", camion=" + camion +
-               /* ", citerne=" + citerne +*/
+                ", citerne=" + citerne +
                 ", commandes=" + commandes +
                 ", dateLivraison=" + dateLivraison +
                 ", statut=" + statut +
