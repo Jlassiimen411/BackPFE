@@ -25,9 +25,9 @@ public class Citerne {
     @OneToMany(mappedBy = "citerne", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Compartiment> compartiments;
 
-    @OneToMany(mappedBy = "camion")
+   /* @OneToMany(mappedBy = "camion")
     @JsonBackReference // Evite la sérialisation de la liste de livraisons pour empêcher la récursion
-    private List<Livraison> livraisons;
+    private List<Livraison> livraisons;*/
 
 
     @OneToOne(mappedBy = "citerne")
