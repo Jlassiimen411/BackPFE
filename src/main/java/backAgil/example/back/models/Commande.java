@@ -1,6 +1,7 @@
 package backAgil.example.back.models;
 
 
+import backAgil.example.back.models.CommandeProduit;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -38,15 +39,14 @@ public class Commande {
 
 
 
-
     public Commande() {
     }
 
-    public Commande(String codeCommande, Float quantite, Date dateCommande, Float price, Float totalPrice, List<CommandeProduit> commandeProduits) {
+    public Commande(String codeCommande, Float quantite, Float price, Date dateCommande, Float totalPrice, List<CommandeProduit> commandeProduits) {
         this.codeCommande = codeCommande;
         this.quantite = quantite;
-        this.dateCommande = dateCommande;
         this.price = price;
+        this.dateCommande = dateCommande;
         this.totalPrice = totalPrice;
         this.commandeProduits = commandeProduits;
     }
@@ -107,15 +107,18 @@ public class Commande {
         this.commandeProduits = commandeProduits;
     }
 
+
     @Override
     public String toString() {
         return "Commande{" +
-                "codeCommande='" + codeCommande + '\'' +
+                "id=" + id +
+                ", codeCommande='" + codeCommande + '\'' +
                 ", quantite=" + quantite +
                 ", dateCommande=" + dateCommande +
                 ", price=" + price +
                 ", totalPrice=" + totalPrice +
                 ", commandeProduits=" + commandeProduits +
+
                 '}';
     }
 }

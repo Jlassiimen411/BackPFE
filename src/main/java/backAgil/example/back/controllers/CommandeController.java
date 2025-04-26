@@ -2,7 +2,8 @@ package backAgil.example.back.controllers;
 import backAgil.example.back.models.CommandeProduit;
 import backAgil.example.back.models.Commande;
 import backAgil.example.back.models.Produit;
-import backAgil.example.back.repositories.CommandeRepository;
+import backAgil.example.back.models.TypeProduit;
+import backAgil.example.back.repositories.*;
 import backAgil.example.back.services.CommandeService;
 import backAgil.example.back.services.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/commandes/v1")
@@ -23,9 +27,17 @@ public class CommandeController {
 
     @Autowired
     private ProduitService produitService;
+    @Autowired
+    private commandeProduitRepository  commandeProduitRepository;
+
 
     @Autowired
     private CommandeRepository commandeRepository;
+    @Autowired
+    private ProduitRepository produitRepository;
+
+    @Autowired
+    private TypeProduitRepository typeProduitRepository;
 
     // GET all commandes
 
@@ -47,6 +59,32 @@ public class CommandeController {
     public ResponseEntity<Map<String, Boolean>> checkCodeCommande(@RequestParam String codeCommande) {
         boolean exists = commandeRepository.existsByCodeCommande(codeCommande);
         return ResponseEntity.ok(Map.of("exists", exists));
+    }
+    @GetMapping("/{idCommande}/type-produits")
+    public List<TypeProduit> getTypeProduitsParCommande(@PathVariable Long idCommande) {
+        List<CommandeProduit> commandeProduits = commandeProduitRepository.findByCommandeId(idCommande);
+
+        List<Long> produitIds = commandeProduits.stream()
+                .map(cp -> cp.getProduit().getId()) // 🛠️ ici la vraie correction
+                .collect(Collectors.toList());
+
+        if (produitIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Produit> produits = produitRepository.findAllById(produitIds);
+
+        List<Long> typeProduitIds = produits.stream()
+                .map(p -> p.getTypeProduit().getId())
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (typeProduitIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return typeProduitRepository.findAllById(typeProduitIds);
     }
 
 
