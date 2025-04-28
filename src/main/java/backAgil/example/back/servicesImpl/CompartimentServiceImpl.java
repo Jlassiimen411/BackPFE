@@ -45,24 +45,44 @@ public class CompartimentServiceImpl implements CompartimentService {
     }
 
 
+    // Méthode dans le service pour ajouter un compartiment
     @Override
     public Compartiment addCompartiment(Compartiment compartiment) {
+        // Vérifier si l'ID de la citerne est fourni
         if (compartiment.getCiterne() == null || compartiment.getCiterne().getId() == null) {
             throw new IllegalArgumentException("Citerne ID must be provided");
         }
 
-        // Vérifier si la référence est fournie
+        // Vérifier si la référence du compartiment est fournie
         if (compartiment.getReference() == null || compartiment.getReference().isEmpty()) {
             throw new IllegalArgumentException("Reference must be provided");
         }
 
+        // Récupérer la citerne associée
         Citerne citerne = citerneRepository.findById(compartiment.getCiterne().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Citerne does not exist"));
 
+        // Vérifier si la capacité totale des compartiments ne dépasse pas la capacité de la citerne
+        double capaciteTotale = compartimentRepository.sumCapaciteByCiterneId(citerne.getId());
+        if (capaciteTotale + compartiment.getCapaciteMax() > citerne.getCapacite()) {
+            throw new IllegalArgumentException("La capacité du compartiment dépasse celle de la citerne.");
+        }
+
+        // Vérifier si le nombre de compartiments ne dépasse pas le nombre maximum autorisé
+        long nombreCompartiments = compartimentRepository.countByCiterneId(citerne.getId());
+        if (nombreCompartiments >= citerne.getNombreCompartiments()) {
+            throw new IllegalArgumentException("Le nombre de compartiments dans la citerne a atteint la limite.");
+        }
+
+        // Lier la citerne au compartiment
         compartiment.setCiterne(citerne);
 
+        // Sauvegarder le compartiment dans la base de données
         return compartimentRepository.save(compartiment);
     }
+
+
+
 
 
 

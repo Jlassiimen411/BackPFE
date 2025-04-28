@@ -47,6 +47,10 @@ public class LivraisonServiceImpl implements LivraisonService {
         }
 
         // Vérification de l'existence du camion
+        if (livraison.getCamion() == null) {
+            throw new IllegalArgumentException("Le camion est requis pour la livraison.");
+        }
+
         Camion camion = camionRepository.findById(livraison.getCamion().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Camion introuvable"));
 
