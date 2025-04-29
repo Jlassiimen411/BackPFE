@@ -1,18 +1,25 @@
 package backAgil.example.back.controllers;
 
+import backAgil.example.back.models.Camion;
 import backAgil.example.back.models.Citerne;
 import backAgil.example.back.models.Livraison;
+import backAgil.example.back.repositories.CamionRepository;
 import backAgil.example.back.repositories.CommandeRepository;
 import backAgil.example.back.repositories.LivraisonRepository;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.LivraisonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -22,9 +29,10 @@ public class LivraisonController {
     private LivraisonService livraisonService;
     @Autowired
     private CamionService camionService;
-
     @Autowired
-    private LivraisonRepository liveraisonRepository;
+    private CamionRepository camionRepository;
+    @Autowired
+    private LivraisonRepository livraisonRepository;
     @GetMapping
     public ResponseEntity<List<Livraison>> getAllLivraisons() {
         List<Livraison> livraisons = livraisonService.getAllLivraisons();
@@ -53,12 +61,17 @@ public class LivraisonController {
         Livraison newLivraison = livraisonService.addLivraison(livraison);
         return ResponseEntity.status(201).body(newLivraison);
     }
-    // CHECK if codeCommande exists
+    // CHECK if codeCommande exists.filter(camion -> !camionsUtilises.contains(camion))
     @GetMapping("/check-code")
     public ResponseEntity<Map<String, Boolean>> checkCodeCommande(@RequestParam String codeLivraison) {
-        boolean exists = liveraisonRepository.existsByCodeLivraison(codeLivraison);
+        boolean exists = livraisonRepository.existsByCodeLivraison(codeLivraison);
         return ResponseEntity.ok(Map.of("exists", exists));
     }
+    @GetMapping("/camions/disponibles")
+    public List<Camion> getCamionsDisponibles(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+        return livraisonService.getCamionsDisponiblesPourDate(date);
+    }
+
 
 
     @DeleteMapping("/{id}")
@@ -66,16 +79,14 @@ public class LivraisonController {
         livraisonService.deleteLivraison(id);
         return ResponseEntity.noContent().build(); // Retourne un code 204 si la suppression est réussie
     }
-
-    @GetMapping("/immatriculation/{marque}")
-    public ResponseEntity<String> getImmatriculationByMarque(@PathVariable String marque) {
-        String immatriculation = livraisonService.getImmatriculationByMarque(marque);
-        if (immatriculation != null) {
-            return ResponseEntity.ok(immatriculation);
-        } else {
-            return ResponseEntity.notFound().build(); // Retourne Not Found si l'immatriculation n'est pas trouvée
-        }
+    @GetMapping("/citerne/disponibles")
+    public List<Citerne> getCiterneDisponibles(
+            @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
+        return livraisonService.getCiterneDisponiblesPourDate(date);
     }
+
+
+
 
 
 

@@ -13,8 +13,11 @@ import backAgil.example.back.services.LivraisonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class LivraisonServiceImpl implements LivraisonService {
 
@@ -64,15 +67,52 @@ public class LivraisonServiceImpl implements LivraisonService {
                         .orElseThrow(() -> new IllegalArgumentException("Commande introuvable: ID=" + c.getId())))
                 .toList();
 
+        // 🔍 Vérifie si la citerne est déjà utilisée à cette date
+        boolean citerneDejaUtilisee = livraisonRepository
+                .findByDateLivraison(livraison.getDateLivraison())
+                .stream()
+                .anyMatch(l -> l.getCiterne().getId().equals(citerne.getId()));
+
+        if (citerneDejaUtilisee) {
+            throw new IllegalArgumentException("Cette citerne est déjà utilisée pour une autre livraison ce jour-là.");
+        }
+
+        // 🔍 Vérifie si le camion est déjà utilisé à cette date
+        boolean camionDejaUtilise = livraisonRepository
+                .findByDateLivraison(livraison.getDateLivraison())
+                .stream()
+                .anyMatch(l -> l.getCamion().getId().equals(camion.getId()));
+
+        if (camionDejaUtilise) {
+            throw new IllegalArgumentException("Ce camion est déjà utilisé pour une autre livraison ce jour-là.");
+        }
+
         livraison.setCamion(camion);
         livraison.setCiterne(citerne);
         livraison.setCommandes(commandes);
 
         return livraisonRepository.save(livraison);
     }
+    public List<Camion> getCamionsUtilisesPourDate(Date date) {
+        List<Livraison> livraisons = livraisonRepository.findByDateLivraison(date);
+        return livraisons.stream()
+                .map(Livraison::getCamion)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<Camion> getCamionsDisponiblesPourDate(Date date) {
+        List<Camion> tousLesCamions = camionRepository.findAll();
+        List<Camion> camionsUtilises = getCamionsUtilisesPourDate(date);
+
+        return tousLesCamions.stream()
+                .filter(camion -> !camionsUtilises.contains(camion))
+                .collect(Collectors.toList());
+    }
 
 
 
+    @Override
     public Livraison updateLivraison(Long id, Livraison updatedLivraison) {
         return livraisonRepository.findById(id).map(livraison -> {
             livraison.setDateLivraison(updatedLivraison.getDateLivraison());
@@ -82,16 +122,25 @@ public class LivraisonServiceImpl implements LivraisonService {
             return livraisonRepository.save(livraison);
         }).orElseThrow(() -> new RuntimeException("Livraison non trouvée avec l'ID : " + id));
     }
-
+    @Override
     public void deleteLivraison(Long id) {
         livraisonRepository.deleteById(id);
     }
-    public String getImmatriculationByMarque(String marque) {
-        List<Camion> camions = cService.getCamionsByMarque(marque);
-        if (!camions.isEmpty()) {
-            return camions.get(0).getImmatriculation(); // Retourne l'immatriculation du premier camion trouvé
-        }
-        return "Camion non trouvé pour cette marque";
+    public List<Citerne> getCiternesUtiliseesPourDate(Date date) {
+        List<Livraison> livraisons = livraisonRepository.findByDateLivraison(date);
+        return livraisons.stream()
+                .map(Livraison::getCiterne)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<Citerne> getCiterneDisponiblesPourDate(Date date) {
+        List<Citerne> toutesLesCiterne = citerneRepository.findAll();
+        List<Citerne> citerneUtilisees = getCiternesUtiliseesPourDate(date);
+
+        return toutesLesCiterne.stream()
+                .filter(citerne -> !citerneUtilisees.contains(citerne))
+                .collect(Collectors.toList());
     }
 
 
