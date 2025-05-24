@@ -6,9 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "compartiments")
 public class Compartiment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Compartiment_ID")
@@ -17,41 +21,29 @@ public class Compartiment {
     @Column(name = "Capacite_Max", nullable = false)
     private double capaciteMax;
 
-    @Column(name = "Reference", nullable = false, unique = true)  // Ajout de la colonne Reference
+    @Column(name = "Reference", nullable = false, unique = true)
     private String reference;
-
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "Statut", nullable = false)
-    private Statut statut; // Statut du compartiment (plein, en cours, vide)
-
 
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "citerne_id", nullable = false)
     private Citerne citerne;
 
-
-    @Enumerated(EnumType.STRING)
-    private TypeProduit typeProduit;
+    @ManyToMany
+    @JoinTable(
+            name = "compartiment_type_produit",
+            joinColumns = @JoinColumn(name = "compartiment_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_produit_id")
+    )
+    private Set<TypeProduit> typeProduits = new HashSet<>();
 
     public Compartiment() {}
-    public enum TypeProduit {
-        GAZ, CARBURANT, LUBRIFIANT
-    }
 
-    public enum Statut {
-        PLEIN,
-        EN_COURS,
-        VIDE;
-    }
-
-    public Compartiment(double capaciteMax, String reference, Statut statut, Citerne citerne, TypeProduit typeProduit) {
+    public Compartiment(double capaciteMax, String reference, Citerne citerne, Set<TypeProduit> typeProduits) {
         this.capaciteMax = capaciteMax;
         this.reference = reference;
-        this.statut = statut;
         this.citerne = citerne;
-        this.typeProduit = typeProduit;
+        this.typeProduits = typeProduits;
     }
 
     public Long getId() {
@@ -70,16 +62,6 @@ public class Compartiment {
         this.capaciteMax = capaciteMax;
     }
 
-
-
-    public Statut getStatut() {
-        return statut;
-    }
-
-    public void setStatut(Statut statut) {
-        this.statut = statut;
-    }
-
     public Citerne getCiterne() {
         return citerne;
     }
@@ -96,12 +78,12 @@ public class Compartiment {
         this.reference = reference;
     }
 
-    public TypeProduit getTypeProduit() {
-        return typeProduit;
+    public Set<TypeProduit> getTypeProduits() {
+        return typeProduits;
     }
 
-    public void setTypeProduit(TypeProduit typeProduit) {
-        this.typeProduit = typeProduit;
+    public void setTypeProduits(Set<TypeProduit> typeProduits) {
+        this.typeProduits = typeProduits;
     }
 
     @Override
@@ -110,9 +92,8 @@ public class Compartiment {
                 "id=" + id +
                 ", capaciteMax=" + capaciteMax +
                 ", reference='" + reference + '\'' +
-                ", statut=" + statut +
                 ", citerne=" + citerne +
-                ", typeProduit=" + typeProduit +
+                ", typeProduits=" + typeProduits +
                 '}';
     }
 }

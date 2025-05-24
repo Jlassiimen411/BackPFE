@@ -1,10 +1,6 @@
 package backAgil.example.back.models;
 
-
-import backAgil.example.back.models.CommandeProduit;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -19,7 +15,6 @@ public class Commande {
     @Column(name = "Commande_ID")
     private Long id;
 
-
     private String codeCommande;
 
     @JsonProperty("quantite")
@@ -32,25 +27,30 @@ public class Commande {
 
     private Float totalPrice;
 
+    @ManyToOne(fetch = FetchType.EAGER) // Changé de LAZY à EAGER pour charger le client
+    @JoinColumn(name = "client_id")
+    // Suppression de @JsonBackReference pour permettre la sérialisation du client
+    private Client client;
 
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<CommandeProduit> commandeProduits;
 
-
-
+    // Constructors
     public Commande() {
     }
 
-    public Commande(String codeCommande, Float quantite, Float price, Date dateCommande, Float totalPrice, List<CommandeProduit> commandeProduits) {
+    public Commande(String codeCommande, Float quantite, Float price, Date dateCommande, Float totalPrice, Client client, List<CommandeProduit> commandeProduits) {
         this.codeCommande = codeCommande;
         this.quantite = quantite;
         this.price = price;
         this.dateCommande = dateCommande;
         this.totalPrice = totalPrice;
+        this.client = client;
         this.commandeProduits = commandeProduits;
     }
 
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -70,6 +70,7 @@ public class Commande {
     public Float getQuantite() {
         return quantite;
     }
+
     @JsonProperty("quantite")
     public void setQuantite(Float quantite) {
         this.quantite = quantite;
@@ -99,6 +100,14 @@ public class Commande {
         this.totalPrice = totalPrice;
     }
 
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     public List<CommandeProduit> getCommandeProduits() {
         return commandeProduits;
     }
@@ -106,7 +115,6 @@ public class Commande {
     public void setCommandeProduits(List<CommandeProduit> commandeProduits) {
         this.commandeProduits = commandeProduits;
     }
-
 
     @Override
     public String toString() {
@@ -117,8 +125,8 @@ public class Commande {
                 ", dateCommande=" + dateCommande +
                 ", price=" + price +
                 ", totalPrice=" + totalPrice +
+                ", client=" + (client != null ? client.getFullName() : "null") +
                 ", commandeProduits=" + commandeProduits +
-
                 '}';
     }
 }

@@ -11,5 +11,5 @@ public interface CommandeService {
     public void deleteCommandeById(Long id);
     public Commande addCommande(Commande commande);
     public Commande editCommande(Commande c);
-
+    boolean checkCodeCommandeExists(String codeCommande);
 }

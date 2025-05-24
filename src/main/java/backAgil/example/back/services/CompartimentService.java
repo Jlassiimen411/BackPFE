@@ -12,6 +12,4 @@ public interface CompartimentService {
     Optional<Compartiment> getCompartimentById(Long id);
     List<Compartiment> getCompartimentsByCiterneId(Long citerneId);
     Compartiment addCompartiment(Compartiment compartiment);
-    Compartiment updateCompartiment(Long id, Compartiment newCompartiment);
-    void deleteCompartiment(Long id);
 }

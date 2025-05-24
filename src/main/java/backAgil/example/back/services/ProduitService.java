@@ -11,7 +11,7 @@ public interface ProduitService {
     void deleteProduitById(Long id);
     Produit addProduit(Produit p);
     Produit editProduit(Produit p);
-
+    Produit getProductById(Long id);
     List<Produit> getProduitsByType(Long typeId);
     List<Produit>  getProductDetails(boolean isSingleProductCheckout,Long id);
 }

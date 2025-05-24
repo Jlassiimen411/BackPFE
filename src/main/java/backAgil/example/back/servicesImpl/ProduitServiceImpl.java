@@ -114,6 +114,10 @@ public class ProduitServiceImpl implements ProduitService { // Implémentez l'in
             return produits;
         }
     }
-
+    @Override
+    public Produit getProductById(Long id) {
+        return pRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + id));
+    }
 
 }

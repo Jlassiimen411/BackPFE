@@ -83,39 +83,4 @@ public class CompartimentServiceImpl implements CompartimentService {
 
 
 
-
-
-
-    @Override
-    public Compartiment updateCompartiment(Long id, Compartiment newCompartiment) {
-        return compartimentRepository.findById(id).map(compartiment -> {
-            if (newCompartiment.getCiterne() == null || newCompartiment.getCiterne().getId() == null) {
-                throw new IllegalArgumentException("Citerne must be provided for the compartiment");
-            }
-
-            // Valider l'existence du Citerne
-            Citerne citerne = citerneRepository.findById(newCompartiment.getCiterne().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Citerne does not exist"));
-
-            compartiment.setCapaciteMax(newCompartiment.getCapaciteMax());
-            compartiment.setStatut(newCompartiment.getStatut());
-            compartiment.setCiterne(citerne);
-
-            // Mettre à jour la référence si elle est présente
-            if (newCompartiment.getReference() != null && !newCompartiment.getReference().isEmpty()) {
-                compartiment.setReference(newCompartiment.getReference());
-            }
-
-            return compartimentRepository.save(compartiment);
-        }).orElse(null);
-    }
-
-
-    @Override
-    public void deleteCompartiment(Long id) {
-        if (!compartimentRepository.existsById(id)) {
-            throw new IllegalArgumentException("Compartiment not found");
-        }
-        compartimentRepository.deleteById(id);
-    }
 }

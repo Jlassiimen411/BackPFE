@@ -5,6 +5,7 @@ import backAgil.example.back.services.CompartimentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,20 +50,5 @@ public class CompartimentController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Compartiment> updateCompartiment(@PathVariable Long id, @RequestBody Compartiment newCompartiment) {
-        Compartiment updatedCompartiment = compartimentService.updateCompartiment(id, newCompartiment);
-        return updatedCompartiment != null ? ResponseEntity.ok(updatedCompartiment) : ResponseEntity.notFound().build();
-    }
 
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCompartiment(@PathVariable Long id) {
-        try {
-            compartimentService.deleteCompartiment(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

@@ -60,32 +60,6 @@ public class CommandeController {
         boolean exists = commandeRepository.existsByCodeCommande(codeCommande);
         return ResponseEntity.ok(Map.of("exists", exists));
     }
-    @GetMapping("/{idCommande}/type-produits")
-    public List<TypeProduit> getTypeProduitsParCommande(@PathVariable Long idCommande) {
-        List<CommandeProduit> commandeProduits = commandeProduitRepository.findByCommandeId(idCommande);
-
-        List<Long> produitIds = commandeProduits.stream()
-                .map(cp -> cp.getProduit().getId()) // 🛠️ ici la vraie correction
-                .collect(Collectors.toList());
-
-        if (produitIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Produit> produits = produitRepository.findAllById(produitIds);
-
-        List<Long> typeProduitIds = produits.stream()
-                .map(p -> p.getTypeProduit().getId())
-                .filter(Objects::nonNull)
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (typeProduitIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        return typeProduitRepository.findAllById(typeProduitIds);
-    }
 
 
 
@@ -136,4 +110,19 @@ public class CommandeController {
         cService.deleteCommandeById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{idCommande}/type-produits")
+    public List<TypeProduit> getTypeProduitsParCommande(@PathVariable Long idCommande) {
+        List<CommandeProduit> commandeProduits = commandeProduitRepository.findByCommandeId(idCommande);
+
+        return commandeProduits.stream()
+                .map(CommandeProduit::getProduit)
+                .filter(Objects::nonNull)
+                .map(Produit::getTypeProduit)
+                .filter(Objects::nonNull)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+
 }
