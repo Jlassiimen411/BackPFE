@@ -1,8 +1,6 @@
 package backAgil.example.back.controllers;
 
-import backAgil.example.back.models.Camion;
-import backAgil.example.back.models.Citerne;
-import backAgil.example.back.models.Livraison;
+import backAgil.example.back.models.*;
 import backAgil.example.back.repositories.CamionRepository;
 import backAgil.example.back.repositories.CommandeRepository;
 import backAgil.example.back.repositories.LivraisonRepository;
@@ -13,12 +11,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.Position;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,6 +27,8 @@ public class LivraisonController {
     private CamionService camionService;
     @Autowired
     private CamionRepository camionRepository;
+    @Autowired
+    private CommandeRepository commandeRepository;
     @Autowired
     private LivraisonRepository livraisonRepository;
     @GetMapping
@@ -70,6 +68,37 @@ public class LivraisonController {
     @GetMapping("/camions/disponibles")
     public List<Camion> getCamionsDisponibles(@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) {
         return livraisonService.getCamionsDisponiblesPourDate(date);
+    }
+    @GetMapping("/position/{commandeId}")
+    public ResponseEntity<Map<String, Double>> getLivreurPosition(@PathVariable Long commandeId) {
+        // Récupérer la commande par son ID
+        Optional<Commande> optionalCommande = commandeRepository.findById(commandeId);
+        if (optionalCommande.isEmpty()) {
+            return ResponseEntity.notFound().build(); // commande introuvable
+        }
+
+        Commande commande = optionalCommande.get();
+
+        // Récupérer le client lié à la commande
+        Client client = commande.getClient();
+        if (client == null) {
+            return ResponseEntity.notFound().build(); // pas de client associé
+        }
+
+        // Extraire les coordonnées du client
+        Double lat = client.getLatitude();
+        Double lng = client.getLongitude();
+
+        if (lat == null || lng == null) {
+            return ResponseEntity.noContent().build(); // coordonnées absentes
+        }
+
+        // Préparer la réponse
+        Map<String, Double> coords = new HashMap<>();
+        coords.put("lat", lat);
+        coords.put("lng", lng);
+
+        return ResponseEntity.ok(coords);
     }
 
 

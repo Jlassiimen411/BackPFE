@@ -10,4 +10,5 @@ import java.util.List;
 public interface LivraisonRepository extends JpaRepository<Livraison , Long> {
     boolean existsByCodeLivraison(String codeLivraison);
     List<Livraison> findByDateLivraison(Date dateLivraison);
+
 }

@@ -19,7 +19,11 @@ public class Client {
 
     @Column(unique = true)
     private String contactNumber;
+    @Column
+    private Double latitude;
 
+    @Column
+    private Double longitude;
 
 
     public Client() {
@@ -35,7 +39,20 @@ public class Client {
     public void setFullAddress(String fullAddress) { this.fullAddress = fullAddress; }
     public String getContactNumber() { return contactNumber; }
     public void setContactNumber(String contactNumber) { this.contactNumber = contactNumber; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
 
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+
+    public Client(Long clientId, String fullName, String fullAddress, String contactNumber, Double latitude, Double longitude) {
+        this.clientId = clientId;
+        this.fullName = fullName;
+        this.fullAddress = fullAddress;
+        this.contactNumber = contactNumber;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
     public Client(Long clientId, String fullName, String fullAddress, String contactNumber) {
         this.clientId = clientId;

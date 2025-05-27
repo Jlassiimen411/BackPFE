@@ -15,6 +15,7 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
             "LEFT JOIN FETCH p.typeProduit " +
             "WHERE c.id = :id")
     Optional<Commande> findCommandeWithProduitsAndTypes(@Param("id") Long id);
+    void deleteById(Long id);
 
 
 }

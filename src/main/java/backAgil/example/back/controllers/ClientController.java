@@ -2,6 +2,7 @@ package backAgil.example.back.controllers;
 
 import backAgil.example.back.models.Client;
 import backAgil.example.back.repositories.ClientRepository;
+import backAgil.example.back.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class ClientController {
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private ClientService clientService;
 
     @GetMapping
     public List<Client> getAllClients() {
@@ -27,13 +30,16 @@ public class ClientController {
         if (client.getFullName() == null || client.getFullName().isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }
-        // Vérifier si un client avec le même fullName existe déjà
+
+        // Vérifie doublon par fullName
         if (clientRepository.findByFullName(client.getFullName()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Conflit : client existe déjà
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
-        Client savedClient = clientRepository.save(client);
+
+        Client savedClient = clientService.createClient(client);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
+
 
     // Add new endpoint to fetch clients by IDs
     @GetMapping("/by-ids")
