@@ -3,6 +3,9 @@ package backAgil.example.back.models;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "cart")
 public class Cart {
@@ -10,11 +13,17 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cartId")
     private Long id;
-    @OneToOne
-    private Produit product;
-/*@OneToOne
-private User user;
- */
+    @ManyToMany
+    @JoinTable(
+            name = "cart_products",
+            joinColumns = @JoinColumn(name = "cart_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private Set<Produit> product = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "user_name") // FK vers User.userName
+    private User user;
+
     //Quand je fait user rejenerer tout******///////
 
 
@@ -22,15 +31,20 @@ private User user;
 
     }
 
-    public Cart(Produit product) {
+    public Cart(Set<Produit> product, User user) {
         this.product = product;
+        this.user = user;
     }
 
-    public Produit getProduct() {
+    public Set<Produit> getProduct() {
         return product;
     }
 
-    public void setProduct(Produit product) {
+    public void setProduct(Set<Produit> product) {
+        this.product = product;
+    }
+
+    public Cart(Set<Produit> product) {
         this.product = product;
     }
 

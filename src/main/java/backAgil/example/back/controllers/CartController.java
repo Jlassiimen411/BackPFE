@@ -5,6 +5,7 @@ import backAgil.example.back.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,13 +18,13 @@ public class CartController {
     private CartService cartService;
 
 
-    //@PreAuthorize("hasRole('User')")
+    @PreAuthorize("hasRole('User')")
     @GetMapping({"/addToCart/{id}"})
     public Cart addToCart(@PathVariable(name ="id") Long id) {
         return cartService.addToCart(id);
 
     }
-    //@PreAuthorize("hasRole('User')")
+    @PreAuthorize("hasRole('User')")
     @GetMapping({"/getCartDetails"})
     public List <Cart> getCartDetails(){
         return cartService.getCartDetails();

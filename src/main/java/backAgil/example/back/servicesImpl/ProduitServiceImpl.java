@@ -2,8 +2,10 @@ package backAgil.example.back.servicesImpl;
 
 import backAgil.example.back.models.Cart;
 import backAgil.example.back.models.Produit;
+import backAgil.example.back.models.User;
 import backAgil.example.back.repositories.CartRepository;
 import backAgil.example.back.repositories.ProduitRepository;
+import backAgil.example.back.services.CartService;
 import backAgil.example.back.services.ProduitService; // Importez l'interface ProduitService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 public class ProduitServiceImpl implements ProduitService { // Implémentez l'interface ProduitService
     @Autowired
     private ProduitRepository pRepo;
+    @Autowired
+    private CartService cartService;
     /*@Autowired
     private UserRepository uRepo;
      */
@@ -98,23 +102,27 @@ public class ProduitServiceImpl implements ProduitService { // Implémentez l'in
 
         }
     }*/
+
     public List<Produit> getProductDetails(boolean isSingleProductCheckout, Long id) {
         if (isSingleProductCheckout) {
-            // Acheter un seul produit
-            Produit product = pRepo.findById(id).orElseThrow(() -> new RuntimeException("Produit non trouvé"));
-            List<Produit> list = new ArrayList<>();
-            list.add(product);
-            return list;
+            Produit product = pRepo.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
+            return List.of(product);
         } else {
-            // Récupérer tous les produits des paniers (sans se soucier de l'utilisateur)
-            List<Cart> carts = cRepo.findAll(); // Récupère tous les paniers disponibles
-            List<Produit> produits = carts.stream()
-                    .map(cart -> cart.getProduct())  // Mapper chaque panier à son produit
-                    .collect(Collectors.toList());  // Collecter les produits dans une liste
-            return produits;
+            User user = cartService.getCurrentUser();  // récupérer user via CartService
+            if (user == null) {
+                return List.of();  // ou gérer l'erreur
+            }
+            List<Cart> carts = cRepo.findByUser(user);
+            return carts.stream()
+                    .flatMap(cart -> cart.getProduct().stream())
+                    .collect(Collectors.toList());
         }
     }
-    @Override
+
+
+
+@Override
     public Produit getProductById(Long id) {
         return pRepo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found: " + id));

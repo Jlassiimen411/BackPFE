@@ -28,21 +28,19 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private GeocodingService geocodingService;
-
     public Client createClient(Client client) {
-        if (client.getFullName() == null || client.getFullName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Le nom complet du client est requis.");
-        }
-
-        // Géocoder si lat/lng absents
-        if (client.getLatitude() == null || client.getLongitude() == null) {
+        System.out.println("Client reçu dans createClient : " + client);
+        if (client.getLatitude() != null && client.getLongitude() != null) {
+            System.out.println("Latitude et longitude reçues : " + client.getLatitude() + ", " + client.getLongitude());
+        } else {
+            System.out.println("Latitude ou longitude manquantes, appel au géocodage...");
             double[] coords = geocodingService.getCoordinates(client.getFullAddress());
             client.setLatitude(coords[0]);
             client.setLongitude(coords[1]);
         }
-
         return clientRepository.save(client);
     }
+
 
 
     @Override

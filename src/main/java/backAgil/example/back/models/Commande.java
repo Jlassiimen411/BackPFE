@@ -125,7 +125,7 @@ public class Commande {
                 ", dateCommande=" + dateCommande +
                 ", price=" + price +
                 ", totalPrice=" + totalPrice +
-                ", client=" + (client != null ? client.getFullName() : "null") +
+                ", client=" + client +
                 ", commandeProduits=" + commandeProduits +
                 '}';
     }

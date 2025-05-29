@@ -27,11 +27,12 @@ public class ClientController {
 
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
+        System.out.println("Client reçu dans le contrôleur : " + client);
+
         if (client.getFullName() == null || client.getFullName().isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }
 
-        // Vérifie doublon par fullName
         if (clientRepository.findByFullName(client.getFullName()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
@@ -39,6 +40,7 @@ public class ClientController {
         Client savedClient = clientService.createClient(client);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
+
 
 
     // Add new endpoint to fetch clients by IDs

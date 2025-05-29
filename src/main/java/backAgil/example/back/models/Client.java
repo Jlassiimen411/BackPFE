@@ -12,12 +12,13 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clientId;
 
-    @Column(unique = true)
+    @Column
     private String fullName;
 
     private String fullAddress;
-
-    @Column(unique = true)
+    @Column
+    private String AlternateContactNumber;
+    @Column
     private String contactNumber;
     @Column
     private Double latitude;
@@ -26,8 +27,16 @@ public class Client {
     private Double longitude;
 
 
+    public String getAlternateContactNumber() {
+        return AlternateContactNumber;
+    }
+
     public Client() {
 
+    }
+
+    public void setAlternateContactNumber(String alternateContactNumber) {
+        AlternateContactNumber = alternateContactNumber;
     }
 
     // Getters and Setters

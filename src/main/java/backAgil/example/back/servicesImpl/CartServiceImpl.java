@@ -1,67 +1,76 @@
 package backAgil.example.back.servicesImpl;
 
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import backAgil.example.back.models.Cart;
 import backAgil.example.back.models.Produit;
+import backAgil.example.back.models.User;
 import backAgil.example.back.repositories.CartRepository;
 
 import backAgil.example.back.repositories.ProduitRepository;
+import backAgil.example.back.repositories.UserRepository;
 import backAgil.example.back.services.CartService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CartServiceImpl implements CartService {
 
     @Autowired
     private CartRepository cRepo;
+
     @Autowired
     private ProduitRepository pRepo;
-    /*
+
     @Autowired
     private UserRepository uRepo;
-     */
 
+    // ✅ Méthode utilitaire pour récupérer l'utilisateur connecté
+    public User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return uRepo.findById(username).orElse(null);
+    }
 
-    public Cart addToCart (Long id){
-        Produit produit = pRepo.findById(id).get();
-        /*String = username = jwtRequestFilter.CUURRENT_USER;
-       User user = null;
-       if(username != null){
-       user = uRepo.findById(username).get();
-       }
-        */
-        if(produit != null /* && user != null*/){
-            Cart cart = new Cart(produit/*,user*/);
+    @Override
+    public Cart addToCart(Long id) {
+        Produit produit = pRepo.findById(id).orElse(null);
+        User user = getCurrentUser();
+
+        if (produit != null && user != null) {
+            Set<Produit> produits = new HashSet<>();
+            produits.add(produit); // ✅ on l'ajoute dans le Set
+            Cart cart = new Cart(produits, user); // ✅ maintenant compatible
             return cRepo.save(cart);
         }
         return null;
     }
-   /* public List<Cart> getCartDetails() {
-        String username = JwtRequestFilter.CURRENT_USER;
-        User user =  uRepo.findById(username).get();
-        return cRepo.findByUser(user);
-    }*/
+
+
+    @Override
     public List<Cart> getCartDetails() {
-        return cRepo.findAll();
+        User user = getCurrentUser();
+        return (user != null) ? cRepo.findByUser(user) : List.of();
     }
 
+    @Override
     public boolean removeFromCart(Long id) {
-        // Rechercher le produit dans le panier
-        List<Cart> cartItems = cRepo.findAll();
+        User user = getCurrentUser();
+        List<Cart> cartItems = cRepo.findByUser(user); // Supprimer uniquement les items du user courant
 
         for (Cart cartItem : cartItems) {
-            if (cartItem.getProduct().getId().equals(id)) {
-                cRepo.delete(cartItem);  // Supprimer l'élément du panier
-                return true;
+            for (Produit p : cartItem.getProduct()) { // getProducts(), pas getProduct()
+                if (p.getId().equals(id)) {
+                    cRepo.delete(cartItem); // supprime toute la ligne de panier
+                    return true;
+                }
             }
         }
-        return false;  // Retourne false si le produit n'a pas été trouvé dans le panier
+        return false;
     }
-
-
 
 }
