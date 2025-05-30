@@ -87,9 +87,14 @@ public class CommandeServiceImpl implements CommandeService {
                 newClient.setFullName(client.getFullName());
                 newClient.setFullAddress(client.getFullAddress());
                 newClient.setContactNumber(client.getContactNumber());
+                newClient.setAlternateContactNumber(client.getAlternateContactNumber());
+                newClient.setLatitude(client.getLatitude());
+                newClient.setLongitude(client.getLongitude());
+
                 client = clientRepository.save(newClient);
                 commande.setClient(client);
-            } else if (client.getClientId() != null) {
+            }
+            else if (client.getClientId() != null) {
                 // Retrieve existing client
                 Client existingClient = clientRepository.findById(client.getClientId())
                         .orElseThrow(() -> new IllegalArgumentException("Client non trouvé"));
@@ -104,6 +109,16 @@ public class CommandeServiceImpl implements CommandeService {
                 if (client.getContactNumber() != null && !client.getContactNumber().equals(existingClient.getContactNumber())) {
                     existingClient.setContactNumber(client.getContactNumber());
                 }
+                if (client.getAlternateContactNumber() != null && !client.getAlternateContactNumber().equals(existingClient.getAlternateContactNumber())) {
+                    existingClient.setAlternateContactNumber(client.getAlternateContactNumber());
+                }
+                if (client.getLatitude() != null && !client.getLatitude().equals(existingClient.getLatitude())) {
+                    existingClient.setLatitude(client.getLatitude());
+                }
+                if (client.getLongitude() != null && !client.getLongitude().equals(existingClient.getLongitude())) {
+                    existingClient.setLongitude(client.getLongitude());
+                }
+
 
                 // Save the updated client
                 client = clientRepository.save(existingClient);

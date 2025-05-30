@@ -14,7 +14,7 @@ public class Client {
 
     @Column
     private String fullName;
-
+    @Column
     private String fullAddress;
     @Column
     private String AlternateContactNumber;
