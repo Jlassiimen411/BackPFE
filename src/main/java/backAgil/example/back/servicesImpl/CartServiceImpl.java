@@ -49,6 +49,14 @@ public class CartServiceImpl implements CartService {
         }
         return null;
     }
+    @Override
+    public void cleanCart() {
+        User user = getCurrentUser();
+        if (user != null) {
+            List<Cart> cartItems = cRepo.findByUser(user);
+            cRepo.deleteAll(cartItems);
+        }
+    }
 
 
     @Override

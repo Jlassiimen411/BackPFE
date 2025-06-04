@@ -39,6 +39,12 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produit non trouvé dans le panier");
         }
     }
+    @PreAuthorize("hasRole('User')")
+    @DeleteMapping("/clean")
+    public ResponseEntity<String> cleanCart() {
+        cartService.cleanCart();
+        return ResponseEntity.ok("Panier vidé avec succès");
+    }
 
 
 

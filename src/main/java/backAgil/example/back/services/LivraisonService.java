@@ -19,7 +19,8 @@ public interface LivraisonService {
     Livraison updateLivraison(Long id, Livraison updatedLivraison);
 
     void deleteLivraison(Long id);
+     List<Livraison> getLivraisonsByUser(String username) ;
 
-    public List<Citerne> getCiterneDisponiblesPourDate(Date date);
-    public List<Camion> getCamionsDisponiblesPourDate(Date date);
+    List<Citerne> getCiterneDisponiblesPourDate(Date date);
+    List<Camion> getCamionsDisponiblesPourDate(Date date);
 }

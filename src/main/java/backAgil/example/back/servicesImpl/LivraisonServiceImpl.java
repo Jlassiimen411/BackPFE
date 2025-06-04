@@ -142,6 +142,20 @@ public class LivraisonServiceImpl implements LivraisonService {
                 .filter(citerne -> !citerneUtilisees.contains(citerne))
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<Livraison> getLivraisonsByUser(String username) {
+        return livraisonRepository.findAll()
+                .stream()
+                .filter(livraison ->
+                        livraison.getCommandes() != null &&
+                                livraison.getCommandes().stream().anyMatch(commande ->
+                                        commande != null &&
+                                                commande.getUser() != null &&
+                                                username.equals(commande.getUser().getUserName())
+                                )
+                )
+                .collect(Collectors.toList());
+    }
 
 
 

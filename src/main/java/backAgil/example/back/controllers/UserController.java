@@ -31,7 +31,7 @@ public class UserController {
     @Autowired
     private RoleRepository roleRepo;
 
-   @PostConstruct
+    @PostConstruct
     public void initRolesAndUser() {
         userService.initRolesAndUser();
     }
@@ -41,33 +41,33 @@ public class UserController {
         List<String> roles = userService.getAllRoles();
         return ResponseEntity.ok(roles);
     }
-   //@PreAuthorize("hasRole('Admin')")
-   @PostMapping("/register")
-   public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
-       try {
-           User user = new User();
-           user.setUserName(request.getUserName());
-           user.setUserFirstName(request.getUserFirstName());
-           user.setUserLastName(request.getUserLastName());
-           user.setEmail(request.getEmail());
-           user.setUserPassword(request.getUserPassword());
+    //@PreAuthorize("hasRole('Admin')")
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        try {
+            User user = new User();
+            user.setUserName(request.getUserName());
+            user.setUserFirstName(request.getUserFirstName());
+            user.setUserLastName(request.getUserLastName());
+            user.setEmail(request.getEmail());
+            user.setUserPassword(request.getUserPassword());
 
-           Set<Role> userRoles = new HashSet<>();
-           for (String roleName : request.getRoles()) {
-               Role role = roleRepo.findByRoleName(roleName)
-                       .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
-               userRoles.add(role);
-           }
-           // Utiliser le setter au pluriel
-           user.setRole(userRoles);
+            Set<Role> userRoles = new HashSet<>();
+            for (String roleName : request.getRoles()) {
+                Role role = roleRepo.findByRoleName(roleName)
+                        .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
+                userRoles.add(role);
+            }
+            // Utiliser le setter au pluriel
+            user.setRole(userRoles);
 
-           User registeredUser = userService.register(user);
-           return ResponseEntity.ok(registeredUser);
+            User registeredUser = userService.register(user);
+            return ResponseEntity.ok(registeredUser);
 
-       } catch (RuntimeException e) {
-           return ResponseEntity.badRequest().body(e.getMessage());
-       }
-   }
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 
 
@@ -112,7 +112,6 @@ public class UserController {
     }
 
 }
-
 
 
 

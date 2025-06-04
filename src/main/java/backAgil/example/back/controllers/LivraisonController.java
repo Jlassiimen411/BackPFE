@@ -42,6 +42,10 @@ public class LivraisonController {
         Optional<Livraison> livraison = livraisonService.getLivraisonById(id);
         return livraison.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping("/user/{username}")
+    public List<Livraison> getLivraisonsByUser(@PathVariable String username) {
+        return livraisonService.getLivraisonsByUser(username);
+    }
 
 
     @PutMapping("/{id}")

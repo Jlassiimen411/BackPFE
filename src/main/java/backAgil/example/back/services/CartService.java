@@ -13,4 +13,6 @@ public interface CartService {
 
     boolean removeFromCart(Long id);
     User getCurrentUser();
+    void cleanCart();
+
 }

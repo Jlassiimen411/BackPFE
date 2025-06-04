@@ -1,15 +1,11 @@
 package backAgil.example.back.servicesImpl;
 
-import backAgil.example.back.models.Client;
-import backAgil.example.back.models.Commande;
-import backAgil.example.back.models.CommandeProduit;
-import backAgil.example.back.models.Produit;
-import backAgil.example.back.repositories.ClientRepository;
-import backAgil.example.back.repositories.CommandeRepository;
-import backAgil.example.back.repositories.ProduitRepository;
-import backAgil.example.back.repositories.commandeProduitRepository;
+import backAgil.example.back.models.*;
+import backAgil.example.back.repositories.*;
 import backAgil.example.back.services.CommandeService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +24,9 @@ public class CommandeServiceImpl implements CommandeService {
     private ProduitRepository pRepo;
 
     @Autowired
-    private ClientRepository clientRepository; // Inject ClientRepository
+    private ClientRepository clientRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public List<Commande> getAllCommandes() {
@@ -45,6 +43,18 @@ public class CommandeServiceImpl implements CommandeService {
             });
         });
         return commandes;
+    }
+
+
+    public User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findById(username).orElse(null);
+    }
+
+    @Override
+    public List<Commande> getCommandesByCurrentUser() {
+        User currentUser = getCurrentUser();
+        return (currentUser != null) ? cRepo.findByUser(currentUser) : List.of();
     }
 
 
@@ -72,88 +82,56 @@ public class CommandeServiceImpl implements CommandeService {
         cRepo.deleteById(id);
     }
 
+    @Transactional
     @Override
     public Commande addCommande(Commande commande) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) {
+            throw new IllegalStateException("Utilisateur non connecté");
+        }
+        commande.setUser(currentUser);
         if (commande.getCommandeProduits() == null) {
             commande.setCommandeProduits(new ArrayList<>());
         }
 
-        // Handle client creation or association
+        // Traiter le client
         if (commande.getClient() != null) {
             Client client = commande.getClient();
-            if (client.getClientId() == null && client.getFullName() != null) {
-                // Create a new client
-                Client newClient = new Client();
-                newClient.setFullName(client.getFullName());
-                newClient.setFullAddress(client.getFullAddress());
-                newClient.setContactNumber(client.getContactNumber());
-                newClient.setAlternateContactNumber(client.getAlternateContactNumber());
-                newClient.setLatitude(client.getLatitude());
-                newClient.setLongitude(client.getLongitude());
-
-                client = clientRepository.save(newClient);
-                commande.setClient(client);
-            }
-            else if (client.getClientId() != null) {
-                // Retrieve existing client
-                Client existingClient = clientRepository.findById(client.getClientId())
-                        .orElseThrow(() -> new IllegalArgumentException("Client non trouvé"));
-
-                // Update client details if provided in the JSON
-                if (client.getFullName() != null && !client.getFullName().equals(existingClient.getFullName())) {
-                    existingClient.setFullName(client.getFullName());
-                }
-                if (client.getFullAddress() != null && !client.getFullAddress().equals(existingClient.getFullAddress())) {
-                    existingClient.setFullAddress(client.getFullAddress());
-                }
-                if (client.getContactNumber() != null && !client.getContactNumber().equals(existingClient.getContactNumber())) {
-                    existingClient.setContactNumber(client.getContactNumber());
-                }
-                if (client.getAlternateContactNumber() != null && !client.getAlternateContactNumber().equals(existingClient.getAlternateContactNumber())) {
-                    existingClient.setAlternateContactNumber(client.getAlternateContactNumber());
-                }
-                if (client.getLatitude() != null && !client.getLatitude().equals(existingClient.getLatitude())) {
-                    existingClient.setLatitude(client.getLatitude());
-                }
-                if (client.getLongitude() != null && !client.getLongitude().equals(existingClient.getLongitude())) {
-                    existingClient.setLongitude(client.getLongitude());
-                }
-
-
-                // Save the updated client
-                client = clientRepository.save(existingClient);
+            if (client.getClientId() == null) {
+                client = clientRepository.save(client);
                 commande.setClient(client);
             } else {
-                throw new IllegalArgumentException("Les détails du client sont incomplets");
+                client = clientRepository.findById(client.getClientId())
+                        .orElseThrow(() -> new IllegalArgumentException("Client non trouvé"));
+                commande.setClient(client);
             }
         }
 
+        // Sauvegarder la commande sans les produits d'abord
+        Commande savedCommande = cRepo.save(commande);
+
+        // Traiter les produits de la commande
         List<CommandeProduit> commandeProduits = new ArrayList<>();
-        Float totalPrice = 0.0f;
+        Float totalPrice = 0f;
 
         for (CommandeProduit cp : commande.getCommandeProduits()) {
             Produit produit = pRepo.findById(cp.getProduit().getId())
                     .orElseThrow(() -> new IllegalArgumentException("Produit non trouvé"));
-
             cp.setProduit(produit);
             if (cp.getQuantite() == null || cp.getQuantite() <= 0) {
-                cp.setQuantite(1.0f);
+                cp.setQuantite(1f);
             }
-
-            Float prixProduit = produit.getPrix();
-            float sousTotal = cp.getQuantite() * prixProduit;
-            totalPrice += sousTotal;
-
-            cp.setCommande(commande);
+            cp.setCommande(savedCommande);
             commandeProduits.add(cp);
+            totalPrice += cp.getQuantite() * produit.getPrix();
         }
 
-        commande.setTotalPrice(totalPrice);
-
-        Commande savedCommande = cRepo.save(commande);
         commandeProduitRepository.saveAll(commandeProduits);
 
-        return savedCommande;
+        // Mettre à jour le prix total et sauvegarder à nouveau
+        savedCommande.setTotalPrice(totalPrice);
+        savedCommande.setCommandeProduits(commandeProduits);
+        return cRepo.save(savedCommande);
     }
 
 

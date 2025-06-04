@@ -23,6 +23,13 @@ public class Commande {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateCommande;
 
+    @Enumerated(EnumType.STRING)
+    private Commande.StatutCommande statut;
+
+    public enum StatutCommande {
+        PLANNIFIER, LIVRE, EN_ATTENTE
+    }
+
     private Float price;
 
     private Float totalPrice;
@@ -31,6 +38,9 @@ public class Commande {
     @JoinColumn(name = "client_id")
     // Suppression de @JsonBackReference pour permettre la sérialisation du client
     private Client client;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -48,6 +58,14 @@ public class Commande {
         this.totalPrice = totalPrice;
         this.client = client;
         this.commandeProduits = commandeProduits;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     // Getters and Setters

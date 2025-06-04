@@ -20,7 +20,7 @@ public class Livraison {
    @ManyToOne
     @JoinColumn(name = "citerne_id", referencedColumnName = "Citerne_ID") // Nouvelle relation avec Citerne
     private Citerne citerne; // Ajout de la référence à Citerne
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "livraison_commandes",
             joinColumns = @JoinColumn(name = "livraison_id"),

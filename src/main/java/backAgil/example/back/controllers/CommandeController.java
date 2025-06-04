@@ -9,6 +9,7 @@ import backAgil.example.back.services.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,6 +41,12 @@ public class CommandeController {
     private TypeProduitRepository typeProduitRepository;
 
     // GET all commandes
+
+    @PreAuthorize("hasRole('User')")
+    @GetMapping("/mesCommandes")
+    public List<Commande> getCommandesUtilisateurConnecte() {
+        return cService.getCommandesByCurrentUser();
+    }
 
     @GetMapping
     public List<Commande> getAll() {
