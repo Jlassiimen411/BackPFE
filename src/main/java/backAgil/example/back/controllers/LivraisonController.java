@@ -37,6 +37,8 @@ public class LivraisonController {
         return ResponseEntity.ok(livraisons);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Livraison> getLivraisonById(@PathVariable Long id) {
         Optional<Livraison> livraison = livraisonService.getLivraisonById(id);
@@ -46,6 +48,7 @@ public class LivraisonController {
     public List<Livraison> getLivraisonsByUser(@PathVariable String username) {
         return livraisonService.getLivraisonsByUser(username);
     }
+
 
 
     @PutMapping("/{id}")

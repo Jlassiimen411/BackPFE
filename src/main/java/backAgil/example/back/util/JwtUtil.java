@@ -16,44 +16,60 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET_KEY = "1234567890123456789012345678901234567890123456789012345678901234"; // 64+ caractères
+
+    private static final String SECRET_KEY = "1234567890123456789012345678901234567890123456789012345678901234"; // (64+ caractères ) pour signer le JWT
 
 
+    private static final int TOKEN_VALIDITY =3600 * 5; //  Durée de validité du token en secondes
 
-    private static final int TOKEN_VALIDITY =3600 * 5;
-
+    // Méthode pour extraire le nom d'utilisateur (subject) du token.
     public String getUsernameFromToken(String token)
     {
-    return getClaimFromToken(token,Claims::getSubject);
+        return getClaimFromToken(token,Claims::getSubject);//pour lire la donnée "subject" (qui contient le nom d'utilisateur).
     }
+
+    //Méthode générique pour lire un champ spécifique (claim) du token.
     private <T> T getClaimFromToken(String token, Function<Claims,T> claimResolver){
-    final Claims claims = getAllClaimsFromToken(token);
-    return claimResolver.apply(claims);
+        final Claims claims = getAllClaimsFromToken(token); //recuperer les donnees du token
+        return claimResolver.apply(claims);
     }
+
+    // Cette partie vérifie et décode le token à l’aide de la clé de signature, puis retourne le contenu du token.
     private Claims getAllClaimsFromToken (String token){
-        return Jwts.parserBuilder()
+        return Jwts.parserBuilder() //constructeur d'analyseur pour decoder et verifier token JwT
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token) //Elle vérifie la signature avec la clé donnée
+                .getBody(); //la partie payload du token (claims du token)
 
 
     }
+
+
     public boolean validateToken(String token, UserDetails userDetails){
         String userName = getUsernameFromToken(token);
         return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+
     private boolean isTokenExpired(String token){
-      final Date expirationDate = getExpirationDateFromToken(token);
-      return expirationDate.before(new Date());
+        // Compare la date d’expiration du token à la date actuelle.
+        final Date expirationDate = getExpirationDateFromToken(token);
+        return expirationDate.before(new Date());
     }
+
+
     private Date getExpirationDateFromToken(String token){
         return getClaimFromToken(token,Claims::getExpiration);
     }
+
+
     private Key getSigningKey() {
+        // Convertit la chaîne en tableau de bytes et la transforme en clé avec hmacShaKeyFor.
         byte[] keyBytes = SECRET_KEY.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 
     public String generateToken(UserDetails userDetails) {
         // Ajouter des claims personnalisés (comme les rôles)
@@ -65,14 +81,14 @@ public class JwtUtil {
 
         // Crée et retourne le JWT
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000L))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .setClaims(claims) // ajoute les rôles.
+                .setSubject(userDetails.getUsername()) //met le nom d’utilisateur.
+                .setIssuedAt(new Date()) // date de création.
+                .setExpiration(new Date(System.currentTimeMillis() + TOKEN_VALIDITY * 1000L)) // date d’expiration.
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)    //on signe le token avec HS512.
+                .compact(); //retourne le token final sous forme de chaîne.
 
-                .compact();
+
     }
 
 }
-

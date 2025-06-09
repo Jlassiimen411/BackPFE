@@ -1,21 +1,23 @@
 package backAgil.example.back.servicesImpl;
 
+import backAgil.example.back.models.PasswordResetToken;
 import backAgil.example.back.models.Role;
 import backAgil.example.back.models.User;
+import backAgil.example.back.repositories.PasswordResetTokenRepository;
 import backAgil.example.back.repositories.RoleRepository;
 import backAgil.example.back.repositories.UserRepository;
 import backAgil.example.back.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import java.util.stream.StreamSupport;
 
@@ -25,6 +27,13 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepo;
     @Autowired
     private RoleRepository roleRepo;
+
+    @Autowired
+    private PasswordResetTokenRepository tokenRepository;
+
+    @Autowired
+    private JavaMailSender mailSender;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -39,6 +48,70 @@ public class UserServiceImpl implements UserService {
 
         return userRepo.save(user);
     }
+    @Transactional
+    public User updateUserProfile(String username, User updatedUser) {
+        Optional<User> userOpt = userRepo.findById(username);
+        if (userOpt.isPresent()) {
+            User existingUser = userOpt.get();
+
+            // Mise à jour des informations (sauf username et rôles)
+            existingUser.setUserFirstName(updatedUser.getUserFirstName());
+            existingUser.setUserLastName(updatedUser.getUserLastName());
+            existingUser.setEmail(updatedUser.getEmail());
+
+            // Si un nouveau mot de passe est fourni
+            if (updatedUser.getUserPassword() != null && !updatedUser.getUserPassword().isEmpty()) {
+                existingUser.setUserPassword(getEncodedPassword(updatedUser.getUserPassword()));
+            }
+
+            return userRepo.save(existingUser);
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé avec le nom : " + username);
+        }
+    }
+
+    public void requestResetPassword(String email) {
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé."));
+
+        // Supprimer anciens tokens
+        tokenRepository.deleteByUser(user);
+
+        // Générer un token
+        String token = UUID.randomUUID().toString();
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryDate(LocalDateTime.now().plusHours(1));
+        tokenRepository.save(resetToken);
+
+        // Créer lien
+        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+
+        // Envoyer email
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Réinitialisation de mot de passe");
+        message.setText("Cliquez sur ce lien pour réinitialiser votre mot de passe : " + resetLink);
+
+        mailSender.send(message);
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElseThrow(() -> new RuntimeException("Token invalide."));
+
+        if (resetToken.isExpired()) {
+            throw new RuntimeException("Le token a expiré.");
+        }
+
+        User user = resetToken.getUser();
+        user.setUserPassword(new BCryptPasswordEncoder().encode(newPassword));
+        userRepo.save(user);
+
+        tokenRepository.delete(resetToken);
+    }
+
 
 
 
@@ -71,15 +144,7 @@ public class UserServiceImpl implements UserService {
         adminUser.setRole(adminRoles);
         userRepo.save(adminUser);
 
-        User user = new User();
-        user.setUserFirstName("raj");
-        user.setUserLastName("sharma");
-        user.setUserName("raj123");
-        user.setUserPassword(getEncodedPassword("raj@pass"));
-        Set<Role> userRoles = new HashSet<>();
-        userRoles.add(userRole);
-        user.setRole(userRoles);
-        userRepo.save(user);
+
     }
 public List<User> getUsersByRole(String roleName) {
     if (!roleRepo.existsById(roleName)) {
@@ -88,7 +153,14 @@ public List<User> getUsersByRole(String roleName) {
     return userRepo.findByRoleName(roleName);
 }
 
-
+    public User getUserByUsername(String username) {
+        Optional<User> userOpt = userRepo.findById(username);
+        if (userOpt.isPresent()) {
+            return userOpt.get();
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé avec le nom : " + username);
+        }
+    }
 
     public String getEncodedPassword(String password){
         return passwordEncoder.encode(password);

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TypeProduitRepository extends JpaRepository<TypeProduit, Long> {
-    // Vous pouvez ajouter des méthodes personnalisées ici si nécessaire
+
 }

@@ -15,6 +15,8 @@ public interface UserRepository extends CrudRepository<User,String> {
 
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r.roleName = :roleName")  // corrigé ici (roles au pluriel)
     List<User> findByRoleName(@Param("roleName") String roleName);
-
     Optional<User> findByUserName(String userName);
+    Optional<User> findByEmail(String email);
+
+
 }

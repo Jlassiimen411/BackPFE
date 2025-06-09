@@ -1,21 +1,13 @@
 package backAgil.example.back.servicesImpl;
 
-import backAgil.example.back.models.Camion;
-import backAgil.example.back.models.Citerne;
-import backAgil.example.back.models.Commande;
-import backAgil.example.back.models.Livraison;
-import backAgil.example.back.repositories.CamionRepository;
-import backAgil.example.back.repositories.CiterneRepository;
-import backAgil.example.back.repositories.CommandeRepository;
-import backAgil.example.back.repositories.LivraisonRepository;
+import backAgil.example.back.models.*;
+import backAgil.example.back.repositories.*;
 import backAgil.example.back.services.CamionService;
 import backAgil.example.back.services.LivraisonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +25,7 @@ public class LivraisonServiceImpl implements LivraisonService {
 
     @Autowired
     private CiterneRepository citerneRepository;
+
 
     public List<Livraison> getAllLivraisons() {
         return livraisonRepository.findAll();
@@ -93,6 +86,7 @@ public class LivraisonServiceImpl implements LivraisonService {
 
         return livraisonRepository.save(livraison);
     }
+
     public List<Camion> getCamionsUtilisesPourDate(Date date) {
         List<Livraison> livraisons = livraisonRepository.findByDateLivraison(date);
         return livraisons.stream()
@@ -100,6 +94,7 @@ public class LivraisonServiceImpl implements LivraisonService {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<Camion> getCamionsDisponiblesPourDate(Date date) {
         List<Camion> tousLesCamions = camionRepository.findAll();
@@ -109,7 +104,6 @@ public class LivraisonServiceImpl implements LivraisonService {
                 .filter(camion -> !camionsUtilises.contains(camion))
                 .collect(Collectors.toList());
     }
-
 
 
     @Override
@@ -122,10 +116,12 @@ public class LivraisonServiceImpl implements LivraisonService {
             return livraisonRepository.save(livraison);
         }).orElseThrow(() -> new RuntimeException("Livraison non trouvée avec l'ID : " + id));
     }
+
     @Override
     public void deleteLivraison(Long id) {
         livraisonRepository.deleteById(id);
     }
+
     public List<Citerne> getCiternesUtiliseesPourDate(Date date) {
         List<Livraison> livraisons = livraisonRepository.findByDateLivraison(date);
         return livraisons.stream()
@@ -133,6 +129,7 @@ public class LivraisonServiceImpl implements LivraisonService {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<Citerne> getCiterneDisponiblesPourDate(Date date) {
         List<Citerne> toutesLesCiterne = citerneRepository.findAll();
@@ -142,6 +139,7 @@ public class LivraisonServiceImpl implements LivraisonService {
                 .filter(citerne -> !citerneUtilisees.contains(citerne))
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<Livraison> getLivraisonsByUser(String username) {
         return livraisonRepository.findAll()
@@ -160,3 +158,8 @@ public class LivraisonServiceImpl implements LivraisonService {
 
 
 }
+
+
+
+
+

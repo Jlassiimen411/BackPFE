@@ -43,14 +43,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             return;
         }
 
-        final String header = request.getHeader("Authorization");
+        final String header = request.getHeader("Authorization"); //Elle récupère le token JWT
         String jwtToken = null;
         String userName = null;
 
         if (header != null && header.startsWith("Bearer ")) {
             jwtToken = header.substring(7);
             try {
-                userName = jwtUtil.getUsernameFromToken(jwtToken);
+                userName = jwtUtil.getUsernameFromToken(jwtToken);//Elle lit dans le token pour savoir à quel utilisateur il appartient.
             } catch (IllegalArgumentException e) {
                 System.out.println("Unable to get JWT token");
             } catch (ExpiredJwtException e) {

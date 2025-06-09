@@ -9,5 +9,9 @@ public interface UserService {
     List<String> getAllRoles();
     void deleteUser(String userName);
     User register(User user);
-    String getEncodedPassword(String password); // ← Optionnelle selon ton besoin
+    String getEncodedPassword(String password);
+    void requestResetPassword(String email);
+    void resetPassword(String token, String newPassword) ;
+    public User getUserByUsername(String username);
+    User updateUserProfile(String username, User updatedUser);
 }

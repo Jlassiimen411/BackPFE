@@ -1,10 +1,15 @@
 package backAgil.example.back.controllers;
+import backAgil.example.back.models.PasswordResetToken;
 import backAgil.example.back.models.RegisterRequest;
 import backAgil.example.back.models.Role;
+import backAgil.example.back.repositories.PasswordResetTokenRepository;
 import backAgil.example.back.repositories.RoleRepository;
 import backAgil.example.back.repositories.UserRepository;
+import backAgil.example.back.services.EmailService;
+import backAgil.example.back.services.PasswordResetTokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,9 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.security.Principal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @CrossOrigin("*")
 @RestController
@@ -27,14 +34,59 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepo;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private PasswordResetTokenService passwordResetTokenService;
+    @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;  // À définir comme bean dans ta config
+
+    @PostMapping("/request-reset")
+    public ResponseEntity<?> requestReset(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Erreur d’envoi : cet email n’existe pas."));
+        }
+
+
+        User user = userOpt.get();
+        String token = UUID.randomUUID().toString();
+        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS)); // 1h de validité
+
+        passwordResetTokenService.createOrUpdateToken(user.getUserName(), token, expiryDate);
+
+        emailService.sendResetEmail(user.getEmail(), token);
+
+        return ResponseEntity.ok(Map.of("message", "Un lien de réinitialisation a été envoyé à votre email."));
+
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        String newPassword = request.get("newPassword");
+        userService.resetPassword(token, newPassword);
+        return ResponseEntity.ok(Map.of("message", "Mot de passe réinitialisé avec succès."));
+
+    }
+
+
 
     @PostConstruct
     public void initRolesAndUser() {
         userService.initRolesAndUser();
     }
+
+
 
     @GetMapping("/roles")
     public ResponseEntity<List<String>> getAllRoles() {
@@ -90,8 +142,7 @@ public class UserController {
     public String forDispatcheur() {
         return "This URL is only accessible to dispatcheur";
     }
-    @Autowired
-    private UserRepository userRepository;
+
 
 
     @GetMapping("/users/byRole/{roleName}")
@@ -108,6 +159,29 @@ public class UserController {
             return ResponseEntity.ok("✅ Utilisateur supprimé avec succès !");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ " + e.getMessage());
+        }
+    }
+    @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('Admin','User','Dispatcheur')")
+    public ResponseEntity<User> getCurrentUserProfile(Principal principal) {
+        try {
+            String username = principal.getName();
+            User user = userService.getUserByUsername(username);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("hasAnyRole('Admin','User','Dispatcheur')")
+    public ResponseEntity<?> updateCurrentUserProfile(@RequestBody User updatedUser, Principal principal) {
+        try {
+            String username = principal.getName();
+            User user = userService.updateUserProfile(username, updatedUser);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

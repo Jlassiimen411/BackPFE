@@ -27,7 +27,7 @@ public class WebSecurityConfiguration {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtRequestFilter jwtRequestFilter;
     private final JwtService jwtService;  // Injection directe de JwtService
-
+    //constructeur qui donne les objet nessaire à utilser
     @Autowired
     public WebSecurityConfiguration(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                                     @Lazy JwtRequestFilter jwtRequestFilter,
@@ -46,7 +46,8 @@ public class WebSecurityConfiguration {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/register", "/authenticate", "/roles").permitAll()
+                        .requestMatchers("/register", "/authenticate", "/roles","/request-reset","/reset-password",        // <- autorisé sans token
+                                "/reset-password").permitAll()
                         .anyRequest().authenticated()
                 );
 
