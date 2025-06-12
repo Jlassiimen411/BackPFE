@@ -97,6 +97,19 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
         try {
+            // ✅ Vérifier si l'utilisateur existe déjà (par email, username, etc.)
+            if (userRepository.existsByEmail(request.getEmail())) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Un utilisateur avec cet email existe déjà.");
+            }
+
+            if (userRepository.existsByUserName(request.getUserName())) {
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body("Un utilisateur avec ce nom existe déjà.");
+            }
+
             User user = new User();
             user.setUserName(request.getUserName());
             user.setUserFirstName(request.getUserFirstName());
@@ -110,16 +123,18 @@ public class UserController {
                         .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
                 userRoles.add(role);
             }
-            // Utiliser le setter au pluriel
             user.setRole(userRoles);
 
             User registeredUser = userService.register(user);
             return ResponseEntity.ok(registeredUser);
 
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur serveur : " + e.getMessage());
         }
     }
+
 
 
 
