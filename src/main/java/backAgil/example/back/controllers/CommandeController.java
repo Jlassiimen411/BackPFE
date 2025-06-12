@@ -50,7 +50,7 @@ public class CommandeController {
 
     @GetMapping
     public List<Commande> getAll() {
-        return cService.getAllCommandes();  // Retourne directement la liste des commandes
+        return cService.getAllCommandes();
     }
 
     // GET commande by ID
@@ -67,6 +67,7 @@ public class CommandeController {
         boolean exists = commandeRepository.existsByCodeCommande(codeCommande);
         return ResponseEntity.ok(Map.of("exists", exists));
     }
+
 
 
 
@@ -96,8 +97,10 @@ public class CommandeController {
                             produit.setDate(existingProduit.getDate());
                         }
                     }
-                    cp.setCommande(c); // Important : rattacher chaque commandeProduit à la commande
+                    cp.setCommande(c);
                 }
+
+
             }
 
             Commande updatedCommande = cService.editCommande(c);
@@ -107,6 +110,17 @@ public class CommandeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erreur serveur : " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/statut/{statut}")
+    public ResponseEntity<List<Commande>> getCommandesByStatut(@PathVariable("statut") String statut) {
+        try {
+            Commande.StatutCommande statutCommande = Commande.StatutCommande.valueOf(statut.toUpperCase());
+            List<Commande> commandes = cService.getCommandesByStatut(statutCommande);
+            return ResponseEntity.ok(commandes);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -131,5 +145,34 @@ public class CommandeController {
                 .collect(Collectors.toList());
     }
 
+    @PatchMapping("/{id}/statut")
+    public ResponseEntity<?> updateCommandeStatut(@PathVariable("id") Long id, @RequestBody Map<String, String> statutMap) {
+        try {
+            String statutStr = statutMap.get("statut");
+            if (statutStr == null) {
+                return ResponseEntity.badRequest().body("Le statut est requis");
+            }
+
+            Commande.StatutCommande nouveauStatut = Commande.StatutCommande.valueOf(statutStr.toUpperCase());
+            Commande updatedCommande = cService.updateStatutCommande(id, nouveauStatut);
+            return ResponseEntity.ok(updatedCommande);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Statut invalide. Valeurs acceptées: EN_ATTENTE, PLANNIFIER, LIVRE, EN_COURS");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erreur serveur : " + e.getMessage());
+        }
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+

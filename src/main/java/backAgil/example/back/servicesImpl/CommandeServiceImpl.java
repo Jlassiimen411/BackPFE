@@ -90,6 +90,8 @@ public class CommandeServiceImpl implements CommandeService {
             throw new IllegalStateException("Utilisateur non connecté");
         }
         commande.setUser(currentUser);
+        // Set default status to EN_COURS
+        commande.setStatut(Commande.StatutCommande.EN_COURS);
         if (commande.getCommandeProduits() == null) {
             commande.setCommandeProduits(new ArrayList<>());
         }
@@ -134,6 +136,32 @@ public class CommandeServiceImpl implements CommandeService {
         return cRepo.save(savedCommande);
     }
 
+    @Override
+    public List<Commande> getCommandesByStatut(Commande.StatutCommande statut) {
+        List<Commande> commandes = cRepo.findByStatut(statut);
+        commandes.forEach(commande -> {
+            if (commande.getClient() != null) {
+                commande.getClient().getFullName(); // Force client loading
+            }
+            commande.getCommandeProduits().forEach(cp -> {
+                Produit produit = cp.getProduit();
+                if (produit != null) {
+                    produit.getTypeProduit(); // Force typeProduit loading
+                }
+            });
+        });
+        return commandes;
+    }
+
+    @Override
+    public Commande updateStatutCommande(Long id, Commande.StatutCommande nouveauStatut) {
+        Commande commande = cRepo.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
+
+        commande.setStatut(nouveauStatut);
+        return cRepo.save(commande);
+    }
+
 
     @Override
     public Commande editCommande(Commande updatedCommande) {
@@ -141,7 +169,6 @@ public class CommandeServiceImpl implements CommandeService {
                 .orElseThrow(() -> new IllegalArgumentException("Commande non trouvée"));
 
         existingCommande.setCodeCommande(updatedCommande.getCodeCommande());
-        existingCommande.setQuantite(updatedCommande.getQuantite());
         existingCommande.setDateCommande(updatedCommande.getDateCommande());
         existingCommande.setPrice(updatedCommande.getPrice());
         existingCommande.setTotalPrice(updatedCommande.getTotalPrice());
@@ -175,3 +202,5 @@ public class CommandeServiceImpl implements CommandeService {
         return cRepo.existsByCodeCommande(codeCommande);
     }
 }
+
+

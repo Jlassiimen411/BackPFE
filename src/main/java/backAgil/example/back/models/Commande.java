@@ -1,3 +1,4 @@
+
 package backAgil.example.back.models;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -17,8 +18,6 @@ public class Commande {
 
     private String codeCommande;
 
-    @JsonProperty("quantite")
-    private Float quantite;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dateCommande;
@@ -27,7 +26,7 @@ public class Commande {
     private Commande.StatutCommande statut;
 
     public enum StatutCommande {
-        PLANNIFIER, LIVRE, EN_ATTENTE
+        PLANNIFIER, LIVRE, EN_ATTENTE, EN_COURS
     }
 
     private Float price;
@@ -50,9 +49,9 @@ public class Commande {
     public Commande() {
     }
 
-    public Commande(String codeCommande, Float quantite, Float price, Date dateCommande, Float totalPrice, Client client, List<CommandeProduit> commandeProduits) {
+    public Commande(String codeCommande,Float price, Date dateCommande, Float totalPrice, Client client, List<CommandeProduit> commandeProduits) {
         this.codeCommande = codeCommande;
-        this.quantite = quantite;
+
         this.price = price;
         this.dateCommande = dateCommande;
         this.totalPrice = totalPrice;
@@ -85,14 +84,6 @@ public class Commande {
         this.codeCommande = codeCommande;
     }
 
-    public Float getQuantite() {
-        return quantite;
-    }
-
-    @JsonProperty("quantite")
-    public void setQuantite(Float quantite) {
-        this.quantite = quantite;
-    }
 
     public Date getDateCommande() {
         return dateCommande;
@@ -134,12 +125,20 @@ public class Commande {
         this.commandeProduits = commandeProduits;
     }
 
+    public StatutCommande getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutCommande statut) {
+        this.statut = statut;
+    }
+
     @Override
     public String toString() {
         return "Commande{" +
                 "id=" + id +
                 ", codeCommande='" + codeCommande + '\'' +
-                ", quantite=" + quantite +
+
                 ", dateCommande=" + dateCommande +
                 ", price=" + price +
                 ", totalPrice=" + totalPrice +
@@ -148,3 +147,4 @@ public class Commande {
                 '}';
     }
 }
+

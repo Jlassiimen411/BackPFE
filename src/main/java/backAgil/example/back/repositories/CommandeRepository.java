@@ -21,4 +21,5 @@ public interface CommandeRepository extends JpaRepository<Commande, Long> {
     List<Commande> findByUser(User user);
 
 
+    List<Commande> findByStatut(Commande.StatutCommande statut);
 }

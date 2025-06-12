@@ -13,4 +13,8 @@ public interface CommandeService {
     public Commande editCommande(Commande c);
     boolean checkCodeCommandeExists(String codeCommande);
     List<Commande> getCommandesByCurrentUser();
+
+    List<Commande> getCommandesByStatut(Commande.StatutCommande statutCommande);
+
+    Commande updateStatutCommande(Long id, Commande.StatutCommande nouveauStatut);
 }

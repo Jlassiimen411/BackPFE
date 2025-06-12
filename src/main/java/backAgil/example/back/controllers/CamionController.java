@@ -9,7 +9,6 @@ import backAgil.example.back.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class CamionController {
     private CamionService camionService;
     @Autowired
     private CompartimentRepository compartimentRepository;
-    @PreAuthorize("hasAnyRole('Dispatcheur')")
+
     @PostMapping
     public ResponseEntity<Camion> addCamion(@RequestBody Camion camion) {
         Camion newCamion = camionService.addCamion(camion);
@@ -38,8 +37,7 @@ public class CamionController {
         }
     }*/
 
-
-    @PreAuthorize("hasAnyRole('Dispatcheur')")
+    // Obtenir tous les camions
     @GetMapping
     public List<Camion> getAllCamions() {
         return camionService.getAllCamions();
@@ -52,12 +50,11 @@ public class CamionController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PreAuthorize("hasAnyRole('Dispatcheur')")
+
     @PutMapping("/{id}")
     public ResponseEntity<Camion> updateCamion(@PathVariable Long id, @RequestBody Camion camionDetails) {
         return ResponseEntity.ok(camionService.updateCamion(id, camionDetails));
     }
-    @PreAuthorize("hasAnyRole('Dispatcheur')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCamion(@PathVariable Long id) {
         camionService.deleteCamion(id);
